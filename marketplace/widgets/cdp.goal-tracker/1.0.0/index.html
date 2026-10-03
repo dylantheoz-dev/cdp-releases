@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Goal Tracker</title>
+<style>
+:root{--accent:#8b5cf6;--text-primary:#f8fafc;--text-secondary:#94a3b8;--surface:#111827;--border:#334155;color-scheme:dark;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;width:100%;background:transparent;color:var(--text-primary)}body{padding:0;overflow:hidden}
+button,input{font:inherit}.shell{display:flex;flex-direction:column;gap:12px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.top h2{font-size:.9rem;margin:0}.top small{font-size:.72rem;color:var(--text-secondary)}
+.field{display:flex;flex-direction:column;gap:4px}.field span,.muted{font-size:.75rem;color:var(--text-secondary)}
+input,button{border:1px solid var(--border);border-radius:9px;background:color-mix(in srgb,var(--surface) 78%,#000 22%);color:var(--text-primary);padding:8px}
+button{cursor:pointer}button:hover{border-color:color-mix(in srgb,var(--accent) 65%,var(--border))}
+.primary{background:var(--accent);border-color:var(--accent);color:white;font-weight:700}.danger{color:#fca5a5}
+.overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.goalCard{width:100%;text-align:left;padding:10px 11px;border:1px solid var(--border);border-radius:11px;background:color-mix(in srgb,var(--surface) 84%,#000 16%);color:var(--text-primary)}
+.goalCard.active{border-color:var(--accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
+.goalCardTop{display:flex;justify-content:space-between;gap:8px}.goalCardName{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.goalCardValue{font-size:.7rem;color:var(--text-secondary);white-space:nowrap}
+.miniTrack,.track{border-radius:999px;overflow:hidden;background:#0005;border:1px solid var(--border)}.miniTrack{height:7px;margin-top:8px}.track{height:16px}
+.fill{height:100%;background:var(--accent)}.goalCardMeta,.meta{display:flex;justify-content:space-between;color:var(--text-secondary)}
+.goalCardMeta{margin-top:5px;font-size:.66rem}.meta{font-size:.75rem}
+.sourceBadge{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:.62rem;color:var(--text-secondary)}
+.editor{border-top:1px solid color-mix(in srgb,var(--border) 70%,transparent);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.header{display:flex;justify-content:space-between;gap:12px}.header h1{font-size:1.05rem;margin:0}.amount{text-align:right}
+.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.grid{display:grid;grid-template-columns:1.4fr .8fr .8fr;gap:8px}.footer{display:flex;justify-content:space-between;margin-top:auto}
+.sourceChoices{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.sourceChoice{font-size:.72rem;min-height:38px}.sourceChoice.active{background:color-mix(in srgb,var(--accent) 18%,var(--surface));border-color:var(--accent);color:var(--text-primary)}
+input:disabled{opacity:.8;cursor:not-allowed}.syncNote{padding:8px 10px;border:1px solid var(--border);border-radius:9px;background:color-mix(in srgb,var(--surface) 84%,#000 16%);font-size:.7rem;color:var(--text-secondary)}
+.empty{text-align:center;padding:26px 12px}.empty h2{margin:0 0 6px;font-size:1rem}
+@media(max-width:620px){.sourceChoices{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.controls{grid-template-columns:repeat(2,1fr)}.overview{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div><h2>All Goals</h2><small id="goalCount">0 goals</small></div>
+    <button id="addGoal" class="primary">＋ New Goal</button>
+  </div>
+  <div id="overview" class="overview"></div>
+  <div id="content"></div>
+</div>
+<script>
+(()=>{
+const SOURCES=["manual","twitch_followers","twitch_subscribers","twitch_subscription_points"];
+const SOURCE_LABELS={
+  manual:"Manual",
+  twitch_followers:"Twitch Followers",
+  twitch_subscribers:"Twitch Subs",
+  twitch_subscription_points:"Twitch Sub Points"
+};
+const state={
+  goals:[],
+  activeId:null,
+  twitch:{
+    followers:null,
+    subscribers:null,
+    subscriptionPoints:null,
+    status:"disconnected",
+    detail:"Connect Twitch to use automatic goals."
+  }
+};
+let initialized=false,saveTimer=null;
+const $=id=>document.getElementById(id);
+const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+const uid=()=>`goal-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+const normalize=g=>{
+  const source=SOURCES.includes(g?.source)?g.source:"manual";
+  const legacyTarget=Math.max(1,num(g?.target,100));
+  const savedTargets=g?.targets&&typeof g.targets==="object"?g.targets:{};
+  const targets={};
+  SOURCES.forEach(key=>{
+    const saved=num(savedTargets[key],NaN);
+    targets[key]=Number.isFinite(saved)&&saved>0
+      ? saved
+      : key===source
+        ? legacyTarget
+        : 100
+  });
+  return {
+    id:typeof g?.id==="string"?g.id:uid(),
+    name:typeof g?.name==="string"&&g.name.trim()?g.name.trim():"New Goal",
+    current:Math.max(0,num(g?.current,0)),
+    target:targets[source],
+    targets,
+    unit:typeof g?.unit==="string"?g.unit.slice(0,18):"",
+    source
+  }
+};
+const active=()=>state.goals.find(g=>g.id===state.activeId)||null;
+
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>parent.postMessage({
+    type:"cdp:storage:set",
+    value:{goals:state.goals,activeId:state.activeId}
+  },"*"),100)
+}
+function request(){parent.postMessage({type:"cdp:storage:get",requestId:`goal-${Date.now()}`},"*")}
+function esc(v){return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function metricFor(source){
+  if(source==="twitch_followers")return state.twitch.followers;
+  if(source==="twitch_subscribers")return state.twitch.subscribers;
+  if(source==="twitch_subscription_points")return state.twitch.subscriptionPoints;
+  return null
+}
+function defaultUnitFor(source){
+  if(source==="twitch_followers")return "followers";
+  if(source==="twitch_subscribers")return "subs";
+  if(source==="twitch_subscription_points")return "points";
+  return ""
+}
+function syncTwitchGoals(){
+  let changed=false;
+  state.goals.forEach(g=>{
+    if(g.source==="manual")return;
+    const expectedUnit=defaultUnitFor(g.source);
+    if(g.unit!==expectedUnit){
+      g.unit=expectedUnit;
+      changed=true
+    }
+    const value=metricFor(g.source);
+    if(typeof value==="number"&&Number.isFinite(value)&&g.current!==value){
+      g.current=Math.max(0,value);
+      changed=true
+    }
+  });
+  return changed
+}
+function add(){
+  const g=normalize({name:`Goal ${state.goals.length+1}`});
+  state.goals.push(g);
+  state.activeId=g.id;
+  save();
+  render()
+}
+function renderOverview(){
+  const root=$("overview");
+  $("goalCount").textContent=`${state.goals.length} ${state.goals.length===1?"goal":"goals"}`;
+  if(!state.goals.length){root.innerHTML="";return}
+  root.innerHTML=state.goals.map(g=>{
+    const pct=Math.max(0,Math.min(100,g.current/g.target*100));
+    const unit=g.unit?` ${esc(g.unit)}`:"";
+    const linked=g.source!=="manual";
+    return `<button class="goalCard ${g.id===state.activeId?"active":""}" data-goal-id="${esc(g.id)}">
+      <div class="goalCardTop">
+        <span class="goalCardName">${esc(g.name)}</span>
+        <span class="goalCardValue">${g.current.toLocaleString()}/${g.target.toLocaleString()}${unit}</span>
+      </div>
+      <div class="miniTrack"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="goalCardMeta"><span>${pct.toFixed(pct>=10?0:1)}%</span><span>${g.current>=g.target?"Reached":"In progress"}</span></div>
+      ${linked?`<div class="sourceBadge">↻ ${esc(SOURCE_LABELS[g.source])}</div>`:""}
+    </button>`
+  }).join("");
+  root.querySelectorAll("[data-goal-id]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    state.activeId=state.activeId===b.dataset.goalId?null:b.dataset.goalId;
+    save();
+    render()
+  })
+}
+function render(){
+  renderOverview();
+  const root=$("content"),g=active();
+  if(!g){
+    if(!state.goals.length){
+      root.innerHTML='<div class="empty"><h2>No goals yet</h2><p class="muted">Create a goal to start tracking progress.</p><button class="primary" id="first">Create Goal</button></div>';
+      $("first").onclick=add
+    }else root.innerHTML="";
+    return
+  }
+  const pct=Math.max(0,Math.min(100,g.current/g.target*100));
+  const unit=g.unit?` ${esc(g.unit)}`:"";
+  const remaining=Math.max(0,g.target-g.current);
+  const linked=g.source!=="manual";
+  const sourceButtons=SOURCES.map(source=>`<button class="sourceChoice ${g.source===source?"active":""}" data-source="${source}">${esc(SOURCE_LABELS[source])}</button>`).join("");
+  const syncText=linked
+    ? (state.twitch.status==="connected"
+        ? `Synced automatically from ${SOURCE_LABELS[g.source]}. Twitch changes refresh this goal automatically.`
+        : state.twitch.detail||"Twitch sync is not currently connected.")
+    : "Manual goals use the adjustment buttons or Current field.";
+
+  root.innerHTML=`
+  <div class="editor">
+    <div class="header">
+      <div><h1>${esc(g.name)}</h1><div class="muted">${remaining.toLocaleString()}${unit} remaining</div></div>
+      <div class="amount"><strong>${g.current.toLocaleString()}${unit}</strong><div class="muted">of ${g.target.toLocaleString()}${unit}</div></div>
+    </div>
+    <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+    <div class="meta"><span>${pct.toFixed(pct>=10?0:1)}%</span><span>${g.current>=g.target?"Goal reached!":"In progress"}</span></div>
+
+    <label class="field">
+      <span>Progress source</span>
+      <div class="sourceChoices">${sourceButtons}</div>
+    </label>
+    <div class="syncNote">${esc(syncText)}</div>
+
+    ${linked?"":'<div class="controls"><button data-d="-10">−10</button><button data-d="-1">−1</button><button data-d="1">+1</button><button data-d="10">+10</button></div>'}
+
+    <div class="grid">
+      <label class="field"><span>Goal name</span><input id="name" maxlength="48" value="${esc(g.name)}"></label>
+      <label class="field"><span>Current</span><input id="current" type="number" min="0" value="${g.current}" ${linked?"disabled":""}></label>
+      <label class="field"><span>Target</span><input id="target" type="number" min="1" value="${g.target}"></label>
+    </div>
+
+    <label class="field"><span>${linked?"Unit (automatic)":"Unit (optional)"}</span><input id="unit" maxlength="18" placeholder="subs, followers, $, etc." value="${esc(g.unit)}" ${linked?"disabled":""}></label>
+
+    <div class="footer">
+      ${linked?"<span></span>":'<button id="reset">Reset</button>'}
+      <button class="danger" id="delete">Delete Goal</button>
+    </div>
+    <div class="muted">Saved automatically in Creator Dashboard Pro.</div>
+  </div>`;
+
+  root.querySelectorAll("[data-source]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const source=b.dataset.source;
+    if(!SOURCES.includes(source))return;
+    g.targets[g.source]=Math.max(1,num(g.target,100));
+    g.source=source;
+    g.target=Math.max(1,num(g.targets[source],100));
+    if(source!=="manual"){
+      const value=metricFor(source);
+      if(typeof value==="number"&&Number.isFinite(value))g.current=Math.max(0,value);
+      g.unit=defaultUnitFor(source)
+    }
+    save();
+    render()
+  });
+
+  root.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{
+    g.current=Math.max(0,g.current+Number(b.dataset.d));
+    save();
+    render()
+  });
+
+  const reset=$("reset");
+  if(reset)reset.onclick=()=>{g.current=0;save();render()};
+  $("delete").onclick=()=>{
+    const i=state.goals.findIndex(x=>x.id===g.id);
+    state.goals.splice(i,1);
+    state.activeId=null;
+    save();
+    render()
+  };
+  $("name").oninput=e=>{g.name=e.target.value.slice(0,48);save();renderOverview()};
+  const current=$("current");
+  if(current&&!linked)current.onchange=e=>{g.current=Math.max(0,num(e.target.value,g.current));save();render()};
+  $("target").onchange=e=>{
+    g.target=Math.max(1,num(e.target.value,g.target));
+    g.targets[g.source]=g.target;
+    save();
+    render()
+  };
+  const unitInput=$("unit");
+  if(unitInput&&!linked)unitInput.oninput=e=>{g.unit=e.target.value.slice(0,18);save();renderOverview()}
+}
+
+$("addGoal").onclick=e=>{e.stopPropagation();add()};
+document.addEventListener("click",e=>{
+  if(!state.activeId)return;
+  const target=e.target;
+  if(!(target instanceof Node))return;
+  const editor=$("content"),overview=$("overview"),addButton=$("addGoal");
+  if(editor?.contains(target)||overview?.contains(target)||addButton?.contains(target))return;
+  state.activeId=null;
+  save();
+  render()
+});
+addEventListener("message",e=>{
+  const m=e.data;
+  if(!m||typeof m!=="object")return;
+  if(m.type==="cdp:init"){
+    const t=m.theme||{};
+    Object.entries(t).forEach(([k,v])=>{
+      if(typeof v==="string"&&v.trim())document.documentElement.style.setProperty(`--${k.replace(/[A-Z]/g,x=>"-"+x.toLowerCase())}`,v)
+    });
+    request()
+  }else if(m.type==="cdp:storage:value"&&!initialized){
+    initialized=true;
+    const v=m.value;
+    if(v&&Array.isArray(v.goals)){
+      state.goals=v.goals.map(normalize);
+      state.activeId=typeof v.activeId==="string"&&state.goals.some(g=>g.id===v.activeId)?v.activeId:null
+    }
+    if(syncTwitchGoals())save();
+    render()
+  }else if(m.type==="cdp:twitch-metrics"&&m.metrics&&typeof m.metrics==="object"){
+    state.twitch={
+      followers:typeof m.metrics.followers==="number"?m.metrics.followers:null,
+      subscribers:typeof m.metrics.subscribers==="number"?m.metrics.subscribers:null,
+      subscriptionPoints:typeof m.metrics.subscriptionPoints==="number"?m.metrics.subscriptionPoints:null,
+      status:typeof m.metrics.status==="string"?m.metrics.status:"error",
+      detail:typeof m.metrics.detail==="string"?m.metrics.detail:""
+    };
+    if(syncTwitchGoals())save();
+    render()
+  }
+});
+render();
+})();
+</script>
+</body>
+</html>
