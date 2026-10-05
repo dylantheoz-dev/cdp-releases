@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-05T03:20:00Z",
+  "items": [
+    {
+      "id": "cdp.goal-tracker",
+      "kind": "widget",
+      "publicationStatus": "published",
+      "name": "Goal Tracker",
+      "description": "Track manual or Twitch-linked follower and subscriber goals with live automatic updates.",
+      "version": "1.0.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "🎯",
+      "minimumCdpVersion": "0.2.8",
+      "integritySha256": "8730de4f38b4ac41cca6d71e671d0120f5b73652016d07d03a9567d5f6535c74",
+      "allowMultiple": true,
+      "defaultWidth": 480,
+      "defaultHeight": 420,
+      "minWidth": 340,
+      "minHeight": 300,
+      "permissions": [],
+      "tags": [
+        "Goals",
+        "Progress",
+        "Creator Utility",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.goal-tracker/1.0.0/index.html"
+    },
+    {
+      "id": "cdp.discord-dock",
+      "kind": "integration",
+      "publicationStatus": "published",
+      "name": "Discord Dock",
+      "description": "Keep Discord servers, channels, friends, and direct messages inside Creator Dashboard Pro through a persistent browser dock.",
+      "version": "0.2.0-test.1",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Community",
+      "icon": "💬",
+      "minimumCdpVersion": "0.2.8",
+      "integrationId": "discord",
+      "host": "browser-dock",
+      "launchUrl": "https://discord.com/app",
+      "provides": [
+        "Discord web app inside a native CDP browser dock",
+        "Servers, channels, friends, and direct messages",
+        "Persistent local Discord web session",
+        "Refresh, open-in-browser, and clear-session controls",
+        "Marketplace-delivered configuration and versioning"
+      ],
+      "requirements": [
+        "An existing Discord account",
+        "Internet access to Discord",
+        "Sign in to Discord inside the dock the first time you use it"
+      ],
+      "tags": [
+        "Community",
+        "Messaging",
+        "Integration",
+        "Browser Dock",
+        "Marketplace"
+      ]
+    }
+  ]
+}
