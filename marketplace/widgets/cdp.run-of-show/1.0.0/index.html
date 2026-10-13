@@ -1,0 +1,57 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Run of Show Planner</title><style>
+:root{--accent:#8b5cf6;--accent-strong:#7c3aed;--accent-text:#c4b5fd;--accent-soft:rgba(139,92,246,.16);--surface:#111827;--surface-hover:#263348;--text-primary:#f8fafc;--text-secondary:#94a3b8;--border:#334155;--danger-text:#fca5a5;font-family:Segoe UI,system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;background:transparent;color:var(--text-primary);min-width:0}body{font-size:13px}main{display:grid;gap:11px}.top,.row,.actions,.heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.top{border-bottom:1px solid var(--border);padding-bottom:11px}.eyebrow{font-size:10px;color:var(--accent-text);font-weight:900;letter-spacing:.1em;text-transform:uppercase}h2{font-size:19px;letter-spacing:-.03em;margin:3px 0}h3{font-size:13px;margin:0}.sub,.muted{color:var(--text-secondary);font-size:11px;line-height:1.5;margin:0}.badge{border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);border-radius:99px;padding:5px 8px;font-size:10px;font-weight:800}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.metric,.panel{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:11px}.metric strong{display:block;font-size:20px;font-variant-numeric:tabular-nums}.metric span{font-size:10px;color:var(--text-secondary)}.panel.accent{background:linear-gradient(120deg,var(--accent-soft),var(--surface) 65%)}
+.items{display:grid;gap:7px;margin-top:10px}.item{display:grid;gap:7px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-hover)}.item:hover{border-color:var(--accent)}.name{font-size:12px;font-weight:850;overflow-wrap:anywhere}.notes{font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text-secondary)}.tag{font-size:10px;color:var(--text-secondary);margin-top:3px}
+button,input,textarea{font:inherit;border:1px solid var(--border);border-radius:8px;background:var(--surface-hover);color:var(--text-primary);padding:8px;min-width:0}button{cursor:pointer}button:hover:not(:disabled){border-color:var(--accent)}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button:disabled{opacity:.45;cursor:default}.primary{background:linear-gradient(130deg,var(--accent-strong),var(--accent));border-color:var(--accent);color:white;font-weight:850}.soft{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}.danger{color:var(--danger-text)}.actions{justify-content:flex-start;flex-wrap:wrap}.actions button{padding:6px 8px;font-size:10px}
+.field{display:grid;gap:4px}.field span{font-size:10px;color:var(--text-secondary);font-weight:700}.field input,.field textarea{width:100%}.field textarea{resize:vertical;min-height:58px}.grid{display:grid;grid-template-columns:2fr 1fr;gap:8px}.empty{text-align:center;padding:18px;color:var(--text-secondary)}.footer{display:flex;gap:9px;justify-content:space-between;align-items:center;padding-top:9px;border-top:1px solid var(--border)}@media(max-width:450px){.grid{grid-template-columns:1fr}.metric strong{font-size:16px}.top{flex-wrap:wrap}.row{align-items:flex-start}}
+</style></head><body><main>
+<header class="top"><div><div class="eyebrow">Stream planning</div><h2>Run of Show</h2><p class="sub">Keep each segment, cue and break on track</p></div><span class="badge" id="badge">0 segments</span></header>
+<section class="metrics"><div class="metric"><strong id="doneCount">0/0</strong><span>Completed</span></div><div class="metric"><strong id="plannedTime">0m</strong><span>Planned length</span></div><div class="metric"><strong id="liveTime">00:00</strong><span>Current timer</span></div></section>
+<section class="panel accent"><div class="row"><div><strong id="currentLabel">Ready to begin</strong><div id="currentNotes" class="muted">Select a segment and start its timer.</div></div><button type="button" id="next" class="soft">Finish &amp; next</button></div></section>
+<section class="panel"><div class="heading"><h3>Segments</h3><span class="muted">Reorder and mark complete</span></div><div id="segments" class="items"></div></section>
+<section class="panel"><div class="heading"><h3 id="formHeading">Add a segment</h3><button id="cancel" type="button" hidden>Cancel edit</button></div>
+<form id="form" style="display:grid;gap:8px;margin-top:10px"><div class="grid"><label class="field"><span>Segment name</span><input id="title" maxlength="75" required placeholder="Intro and welcome"></label><label class="field"><span>Estimated minutes</span><input type="number" id="mins" min="1" max="600" value="15" required></label></div><label class="field"><span>Talking points and cues</span><textarea id="notes" maxlength="1500" placeholder="Reminders, sponsor mention, transitions…"></textarea></label><div class="actions"><button class="primary" id="submit" type="submit">＋ Add segment</button></div></form></section>
+<footer class="footer"><span class="muted">Automatically saved in CDP.</span><button id="reset" type="button">Reset checklist</button></footer>
+</main><script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2),clamp=(n,min,max)=>Math.min(max,Math.max(min,Math.floor(Number(n)||min)));
+const defaults=()=>["Starting soon / intro","Main content","Community time","Wrap-up and raid"].map((title,i)=>({id:uid(),title,mins:[5,60,20,10][i],notes:"",done:false}));
+let segments=defaults(),activeId=null,startedAt=null,hydrated=false,editId=null,confirmDelete=null,resetPending=false;
+const norm=x=>({id:typeof x?.id==="string"?x.id.slice(0,90):uid(),title:typeof x?.title==="string"&&x.title.trim()?x.title.trim().slice(0,75):"Segment",mins:clamp(x?.mins,1,600),notes:typeof x?.notes==="string"?x.notes.slice(0,1500):"",done:x?.done===true});
+const save=()=>parent.postMessage({type:"cdp:storage:set",value:{segments,activeId,startedAt}},"*");
+const active=()=>segments.find(x=>x.id===activeId)||null;
+const clock=()=>{$("liveTime").textContent=active()&&startedAt?fmt((Date.now()-startedAt)/1000):"00:00"};
+const fmt=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+function render(){
+ $("badge").textContent=segments.length+" segments";$("doneCount").textContent=segments.filter(s=>s.done).length+"/"+segments.length;$("plannedTime").textContent=segments.reduce((n,s)=>n+s.mins,0)+"m";
+ const a=active();$("currentLabel").textContent=a?a.title:"Ready to begin";$("currentNotes").textContent=a?(a.notes||"Timer running on this segment."):"Select a segment and start its timer.";
+ $("next").disabled=!hydrated||!segments.length;$("reset").textContent=resetPending?"Confirm reset":"Reset checklist";$("reset").className=resetPending?"danger":"";clock();
+ $("segments").innerHTML=segments.length?segments.map((s,i)=>'<article class="item"><div class="row"><div><div class="name">'+(i+1)+'. '+esc(s.title)+'</div><div class="tag">'+s.mins+' minutes · '+(s.done?"Complete":activeId===s.id?"Running":"Not complete")+'</div></div><button data-act="toggle" data-id="'+esc(s.id)+'">'+(s.done?"Undo":"✓ Done")+'</button></div>'+(s.notes?'<div class="notes">'+esc(s.notes)+'</div>':"")+'<div class="actions"><button class="'+(activeId===s.id?"soft":"")+'" data-act="start" data-id="'+esc(s.id)+'">▶ '+(activeId===s.id?"Restart":"Start")+'</button><button data-act="up" data-id="'+esc(s.id)+'" '+(i===0?"disabled":"")+'>↑ Up</button><button data-act="down" data-id="'+esc(s.id)+'" '+(i===segments.length-1?"disabled":"")+'>↓ Down</button><button data-act="edit" data-id="'+esc(s.id)+'">Edit</button><button class="danger" data-act="delete" data-id="'+esc(s.id)+'">'+(confirmDelete===s.id?"Confirm delete":"Delete")+'</button></div></article>').join(""):'<div class="empty">Add a segment to get started.</div>';
+}
+$("segments").addEventListener("click",e=>{
+ const b=e.target.closest("button[data-act]");if(!b||!hydrated)return;const id=b.dataset.id,act=b.dataset.act,i=segments.findIndex(s=>s.id===id);if(i<0)return;const s=segments[i];
+ if(act==="up"&&i>0){[segments[i],segments[i-1]]=[segments[i-1],segments[i]]}
+ else if(act==="down"&&i<segments.length-1){[segments[i],segments[i+1]]=[segments[i+1],segments[i]]}
+ else if(act==="start"){activeId=id;startedAt=Date.now();s.done=false}
+ else if(act==="toggle"){s.done=!s.done;if(s.done&&activeId===id){activeId=null;startedAt=null}}
+ else if(act==="edit"){editId=id;$("title").value=s.title;$("mins").value=s.mins;$("notes").value=s.notes;$("formHeading").textContent="Edit segment";$("submit").textContent="Save changes";$("cancel").hidden=false;return}
+ else if(act==="delete"){if(confirmDelete!==id){confirmDelete=id;render();return}segments.splice(i,1);confirmDelete=null;if(activeId===id){activeId=null;startedAt=null}if(editId===id)cancel()}
+ else return;save();render()
+});
+function cancel(){editId=null;$("form").reset();$("formHeading").textContent="Add a segment";$("submit").textContent="＋ Add segment";$("cancel").hidden=true}
+$("cancel").onclick=cancel;
+$("form").addEventListener("submit",e=>{e.preventDefault();if(!hydrated)return;const title=$("title").value.trim();if(!title)return;const data={title:title.slice(0,75),mins:clamp($("mins").value,1,600),notes:$("notes").value.slice(0,1500)};
+ if(editId){const s=segments.find(s=>s.id===editId);if(s)Object.assign(s,data)}else if(segments.length<100)segments.push({id:uid(),...data,done:false});cancel();save();render()
+});
+$("next").onclick=()=>{if(!hydrated||!segments.length)return;const a=active();if(a)a.done=true;const first=segments.find(s=>!s.done);activeId=first?.id||null;startedAt=first?Date.now():null;save();render()};
+$("reset").onclick=()=>{if(!hydrated)return;if(!resetPending){resetPending=true;render();return}resetPending=false;segments.forEach(s=>s.done=false);activeId=null;startedAt=null;save();render()};
+setInterval(clock,1000);
+addEventListener("message",e=>{if(e.source!==parent||!e.data||typeof e.data!=="object")return;const m=e.data;
+ if(m.type==="cdp:init"){for(const[k,v]of Object.entries(m.theme||{}))if(typeof v==="string"&&v.trim())document.documentElement.style.setProperty("--"+k.replace(/[A-Z]/g,c=>"-"+c.toLowerCase()),v);parent.postMessage({type:"cdp:storage:get",requestId:"ros-load"},"*")}
+ else if(m.type==="cdp:storage:value"&&m.requestId==="ros-load"&&!hydrated){hydrated=true;const v=m.value;if(Array.isArray(v?.segments))segments=v.segments.slice(0,100).map(norm);activeId=typeof v?.activeId==="string"&&segments.some(s=>s.id===v.activeId)?v.activeId:null;startedAt=activeId&&Number.isFinite(v?.startedAt)?Math.min(Date.now(),Math.max(0,v.startedAt)):null;render()}
+});render()
+})();
+</script></body></html>

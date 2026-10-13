@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Custom Counter Board</title>
+<style>
+:root{--accent:#8b5cf6;--accent-strong:#7c3aed;--accent-text:#c4b5fd;--accent-soft:rgba(139,92,246,.17);--surface:#111827;--surface-hover:#263348;--text-primary:#f8fafc;--text-secondary:#94a3b8;--border:#334155;--danger-text:#fca5a5;font-family:Segoe UI,system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;min-width:0;color:var(--text-primary);background:transparent}body{font-size:13px}.shell{display:grid;gap:13px}
+.top,.row,.tools,.mini,.head{display:flex;align-items:center;justify-content:space-between;gap:9px}.top{padding-bottom:10px;border-bottom:1px solid var(--border)}.eyebrow{text-transform:uppercase;letter-spacing:.11em;font-size:10px;font-weight:800;color:var(--accent-text);margin-bottom:2px}.top h2{font-size:19px;letter-spacing:-.03em;margin:0}.sub,.muted,small{font-size:11px;color:var(--text-secondary)}.sub{margin:4px 0 0}
+.countBadge{border:1px solid var(--border);background:var(--surface-hover);border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:11px}.metric strong{display:block;font-size:21px;font-variant-numeric:tabular-nums;line-height:1.2}.metric span{font-size:10px;color:var(--text-secondary)}.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:10px}
+.card{min-width:0;border:1px solid var(--border);border-radius:13px;background:var(--surface);overflow:hidden}.card:hover{border-color:var(--accent)}.cardHead{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:12px 12px 5px}.name{font-weight:800;font-size:13px;overflow-wrap:anywhere}.tag{font-size:10px;color:var(--text-secondary)}.count{font-size:38px;font-weight:900;line-height:1.18;letter-spacing:-.055em;margin:0 12px;font-variant-numeric:tabular-nums;color:var(--accent-text)}.lifetime{margin:0 12px 11px;font-size:10px;color:var(--text-secondary)}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 12px 10px}.controls button{font-size:14px;font-weight:900}.cardFoot{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:9px 12px;border-top:1px solid var(--border);background:var(--surface-hover)}.cardFoot button{font-size:10px;padding:5px 8px}.edit{padding:10px 12px;display:grid;gap:7px;border-top:1px solid var(--border)}
+button,input{font:inherit;min-width:0;border-radius:8px;border:1px solid var(--border);background:var(--surface-hover);color:var(--text-primary);padding:8px 9px}button{cursor:pointer;transition:border-color .15s,background-color .15s}button:hover{border-color:var(--accent)}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.primary{border-color:var(--accent);background:linear-gradient(130deg,var(--accent-strong),var(--accent));color:white;font-weight:800}.soft{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}.danger{color:var(--danger-text)}button:disabled{opacity:.5;cursor:default}
+.add{display:flex;gap:8px}.add input{flex:1}.add button{white-space:nowrap}.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid var(--border);padding-top:10px}.empty{padding:24px 12px;text-align:center;border:1px dashed var(--border);border-radius:13px;color:var(--text-secondary)}
+@media(max-width:420px){.summary{gap:5px}.metric{padding:8px}.metric strong{font-size:18px}.list{grid-template-columns:1fr}.add{flex-wrap:wrap}.add input{flex-basis:100%}}@media(prefers-reduced-motion:reduce){button{transition:none}}
+</style></head><body><main class="shell">
+<header class="top"><div><div class="eyebrow">Stream utilities</div><h2>Counter Board</h2><p class="sub">Track wins, deaths, moments &amp; more</p></div><span class="countBadge" id="counterBadge">0 counters</span></header>
+<section class="summary" aria-label="Counter summary"><div class="metric"><strong id="totalSession">0</strong><span>Session count</span></div><div class="metric"><strong id="totalLifetime">0</strong><span>Lifetime adds</span></div><div class="metric"><strong id="totalCards">0</strong><span>Active counters</span></div></section>
+<section class="list" id="list" aria-label="Counters"></section>
+<form class="add" id="createForm"><input id="newName" maxlength="48" aria-label="New counter name" placeholder="New counter name (e.g. Jump scares)" required><button class="primary" type="submit">＋ Add counter</button></form>
+<footer class="foot"><span class="muted">Changes save automatically in CDP.</span><button id="resetAll" type="button">Reset session totals</button></footer>
+</main><script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const safe=s=>String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const clamp=n=>Math.min(1000000000,Math.max(0,Math.floor(Number(n)||0)));
+const sample=()=>[{id:uid(),name:"Wins",value:0,lifetime:0,step:1},{id:uid(),name:"Deaths",value:0,lifetime:0,step:1}];
+let counters=sample(),hydrated=false,editing=null,confirmDelete=null,resetPending=false;
+const normalize=o=>({id:typeof o?.id==="string"?o.id.slice(0,80):uid(),name:typeof o?.name==="string"&&o.name.trim()?o.name.trim().slice(0,48):"Counter",value:clamp(o?.value),lifetime:clamp(o?.lifetime),step:Math.min(10000,Math.max(1,Math.floor(Number(o?.step)||1)))});
+const store=()=>parent.postMessage({type:"cdp:storage:set",value:{counters:counters}},"*");
+const request=()=>parent.postMessage({type:"cdp:storage:get",requestId:"counter-load"},"*");
+function render(){
+ const count=counters.length;$("counterBadge").textContent=count+" counter"+(count===1?"":"s");$("totalCards").textContent=count;
+ $("totalSession").textContent=counters.reduce((s,c)=>s+c.value,0).toLocaleString();
+ $("totalLifetime").textContent=counters.reduce((s,c)=>s+c.lifetime,0).toLocaleString();
+ $("resetAll").textContent=resetPending?"Confirm reset all":"Reset session totals";
+ $("resetAll").className=resetPending?"danger":"";
+ $("list").innerHTML=count?counters.map(c=>
+ '<article class="card" data-card="'+safe(c.id)+'"><div class="cardHead"><div><div class="name">'+safe(c.name)+'</div><div class="tag">Session counter</div></div><button data-act="edit" data-id="'+safe(c.id)+'" aria-label="Edit '+safe(c.name)+'">✎</button></div>'+
+ '<div class="count">'+c.value.toLocaleString()+'</div><div class="lifetime">Lifetime additions: '+c.lifetime.toLocaleString()+'</div>'+
+ '<div class="controls"><button data-act="minus" data-id="'+safe(c.id)+'" aria-label="Decrease '+safe(c.name)+'">−'+c.step+'</button><button class="soft" data-act="plus" data-id="'+safe(c.id)+'" aria-label="Increase '+safe(c.name)+'">+'+c.step+'</button><button data-act="plus5" data-id="'+safe(c.id)+'" aria-label="Increase '+safe(c.name)+' by five">+5</button></div>'+
+ '<div class="cardFoot"><button data-act="reset" data-id="'+safe(c.id)+'">Reset session</button><button class="danger" data-act="delete" data-id="'+safe(c.id)+'">'+(confirmDelete===c.id?"Confirm delete":"Delete")+'</button></div>'+
+ (editing===c.id?'<div class="edit"><label class="muted">Name<input data-edit-name="'+safe(c.id)+'" maxlength="48" value="'+safe(c.name)+'"></label><label class="muted">Increment (1–10,000)<input data-edit-step="'+safe(c.id)+'" type="number" min="1" max="10000" value="'+c.step+'"></label><div class="tools"><button class="soft" data-act="saveEdit" data-id="'+safe(c.id)+'">Save edits</button><button data-act="cancelEdit" data-id="'+safe(c.id)+'">Cancel</button></div></div>':"")+
+ '</article>').join(""):'<div class="empty">No counters yet. Add one below to get started.</div>';
+}
+function mutate(id,change){const c=counters.find(c=>c.id===id);if(!c)return;change(c);store();render()}
+$("list").addEventListener("click",e=>{
+ const b=e.target.closest("button[data-act]");if(!b||!hydrated)return;
+ const id=b.dataset.id,act=b.dataset.act;
+ if(act==="plus"||act==="plus5"){mutate(id,c=>{const amount=act==="plus5"?5:c.step;c.value=clamp(c.value+amount);c.lifetime=clamp(c.lifetime+amount)});return}
+ if(act==="minus"){mutate(id,c=>{c.value=clamp(c.value-c.step)});return}
+ if(act==="reset"){mutate(id,c=>{c.value=0});return}
+ if(act==="edit"){editing=editing===id?null:id;confirmDelete=null;render();return}
+ if(act==="cancelEdit"){editing=null;render();return}
+ if(act==="saveEdit"){
+  const card=b.closest("[data-card]"),n=card.querySelector("[data-edit-name]"),step=card.querySelector("[data-edit-step]");
+  if(!n.value.trim())return n.focus();
+  mutate(id,c=>{c.name=n.value.trim().slice(0,48);c.step=Math.min(10000,Math.max(1,Math.floor(Number(step.value)||1)))});editing=null;render();return;
+ }
+ if(act==="delete"){
+  if(confirmDelete!==id){confirmDelete=id;render();return}
+  counters=counters.filter(c=>c.id!==id);confirmDelete=null;editing=null;store();render();
+ }
+});
+$("createForm").addEventListener("submit",e=>{e.preventDefault();if(!hydrated)return;const input=$("newName"),name=input.value.trim();if(!name)return;counters.push(normalize({name}));input.value="";store();render()});
+$("resetAll").onclick=()=>{if(!hydrated)return;if(!resetPending){resetPending=true;render();return}resetPending=false;counters.forEach(c=>c.value=0);store();render()};
+addEventListener("message",e=>{
+ if(e.source!==parent||!e.data||typeof e.data!=="object")return;
+ const m=e.data;
+ if(m.type==="cdp:init"){const t=m.theme||{};for(const [k,v]of Object.entries(t))if(typeof v==="string"&&v.trim())document.documentElement.style.setProperty("--"+k.replace(/[A-Z]/g,x=>"-"+x.toLowerCase()),v);request()}
+ else if(m.type==="cdp:storage:value"&&m.requestId==="counter-load"&&!hydrated){
+  hydrated=true;
+  if(m.value&&Array.isArray(m.value.counters))counters=m.value.counters.slice(0,250).map(normalize);
+  render()
+ }
+});
+render();
+})();
+</script></body></html>

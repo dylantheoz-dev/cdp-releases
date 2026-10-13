@@ -1,0 +1,84 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Game Progress Tracker</title><style>
+:root{--accent:#8b5cf6;--accent-strong:#7c3aed;--accent-text:#c4b5fd;--accent-soft:rgba(139,92,246,.16);--surface:#111827;--surface-hover:#263348;--text-primary:#f8fafc;--text-secondary:#94a3b8;--border:#334155;--danger-text:#fca5a5;font-family:Segoe UI,system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;min-width:0;background:transparent;color:var(--text-primary)}body{font-size:13px}main{display:grid;gap:11px}.top,.row,.actions,.heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.top{padding-bottom:10px;border-bottom:1px solid var(--border)}.eyebrow{color:var(--accent-text);text-transform:uppercase;font-size:10px;font-weight:850;letter-spacing:.1em}h2{font-size:19px;letter-spacing:-.03em;margin:3px 0}h3{font-size:13px;margin:0}.sub,.muted{font-size:11px;color:var(--text-secondary);line-height:1.5}.badge{font-size:10px;color:var(--accent-text);background:var(--accent-soft);padding:5px 8px;border:1px solid var(--border);border-radius:99px}
+.panel{padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface)}.panel.accent{background:linear-gradient(120deg,var(--accent-soft),var(--surface) 60%)}button,input,select{font:inherit;color:var(--text-primary);border:1px solid var(--border);background:var(--surface-hover);border-radius:8px;padding:8px;min-width:0}button{cursor:pointer}button:hover:not(:disabled){border-color:var(--accent)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button:disabled{opacity:.5;cursor:default}.primary{border-color:var(--accent);background:linear-gradient(130deg,var(--accent-strong),var(--accent));color:white;font-weight:850}.soft{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}.danger{color:var(--danger-text)}.actions{justify-content:flex-start;flex-wrap:wrap}.actions button{font-size:11px;padding:7px 9px}.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}.field{display:grid;gap:4px}.field span{font-size:10px;color:var(--text-secondary);font-weight:750}.field input,.field select{width:100%}.items{display:grid;gap:7px;margin-top:10px}.item{display:grid;gap:7px;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--surface-hover)}.item:hover{border-color:var(--accent)}.itemTitle{font-size:12px;font-weight:800;overflow-wrap:anywhere}.meta{display:flex;gap:6px;flex-wrap:wrap;font-size:10px;color:var(--text-secondary)}.pill{padding:3px 7px;border:1px solid var(--border);border-radius:7px}.pill.done{background:var(--accent-soft);color:var(--accent-text)}.progress{height:10px;border:1px solid var(--border);background:var(--surface-hover);border-radius:99px;overflow:hidden;margin-top:9px}.fill{height:100%;background:var(--accent)}.empty{text-align:center;padding:20px 10px;color:var(--text-secondary)}.footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border)}@media(max-width:460px){.grid{grid-template-columns:1fr}.top{flex-wrap:wrap}.row{align-items:flex-start}}
+#storageNotice{margin:0;padding:9px 11px;border:1px solid var(--border);border-radius:8px;color:var(--danger-text);background:var(--surface);font-size:12px}
+</style></head><body><main>
+<p id="storageNotice" role="status" aria-live="polite" hidden></p>
+<header class="top"><div><div class="eyebrow">Gaming &amp; campaigns</div><h2>Game Progress Tracker</h2><p class="sub">Track quests, milestones and collectibles</p></div><span class="badge" id="badge">0 games</span></header>
+<section class="panel accent"><div class="heading"><h3>Your games</h3><button id="deleteGame" class="danger" hidden type="button">Delete game</button></div><div id="games" class="actions" style="margin:10px 0"></div><form id="gameForm" class="grid"><label class="field"><span>New game name</span><input id="gameName" maxlength="72" placeholder="Pokémon Nuzlocke" required></label><label class="field"><span>Starting template</span><select id="template"><option value="custom">Blank</option><option value="nuzlocke">Pokémon Nuzlocke</option><option value="rpg">Quest / RPG</option><option value="completion">Completion checklist</option></select></label><button class="primary" type="submit" style="grid-column:1/-1">＋ Create game</button></form></section>
+<section class="panel"><div class="row"><div><h3 id="current">Select a game</h3><span class="muted" id="summary">Start tracking your progress</span></div><span class="badge" id="fraction">0%</span></div><div class="progress"><div class="fill" id="fill" style="width:0%"></div></div></section>
+<section class="panel"><div class="heading"><h3>Objectives</h3><span class="muted">Manually check off each goal</span></div><div id="objectives" class="items"></div><form id="objectiveForm" class="grid" style="margin-top:10px"><label class="field"><span>New objective</span><input id="objectiveText" maxlength="120" placeholder="Earn a gym badge" required></label><label class="field"><span>Category</span><input id="category" maxlength="35" placeholder="Badges"></label><button class="primary" type="submit" style="grid-column:1/-1">＋ Add objective</button></form></section>
+<footer class="footer"><span class="muted">All progress saves automatically.</span><button id="resetGame" type="button">Reset progress</button></footer>
+</main><script>
+(()=>{
+"use strict";
+
+// Keep rejected changes out of the host's 256 KiB per-instance storage budget.
+// The storage protocol has no acknowledgement; this guards size, not disk failures.
+function createSaveGuard(readState,restoreState){
+ let snapshot;
+ const notice=message=>{const el=document.getElementById("storageNotice");el.textContent=message;el.hidden=!message;return false};
+ return{
+  remember(){snapshot=JSON.stringify(readState())},
+  warn:notice,
+  save(){
+   const value=readState(),serialized=JSON.stringify(value);
+   if(new TextEncoder().encode(serialized).byteLength>256*1024){
+    if(snapshot!==undefined)restoreState(JSON.parse(snapshot));
+    return notice("This change exceeds the widget's storage limit. Shorten notes or remove older items and try again.");
+   }
+   parent.postMessage({type:"cdp:storage:set",value},"*");
+   snapshot=serialized;notice("");return true;
+  }
+ };
+}
+function applyTheme(theme){
+ for(const[k,v]of Object.entries(theme||{}))if(typeof v==="string"&&v.trim()){
+  document.documentElement.style.setProperty("--"+k.replace(/[A-Z]/g,c=>"-"+c.toLowerCase()),v);
+  if(k==="colorScheme"&&(v==="light"||v==="dark"))document.documentElement.style.colorScheme=v;
+ }
+}
+
+const $=id=>document.getElementById(id),esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const templates={custom:[],nuzlocke:["Choose starter","Badge 1","Badge 2","Badge 3","Badge 4","Badge 5","Badge 6","Badge 7","Badge 8","Reach Elite Four","Defeat Champion","Enter Hall of Fame"],rpg:["Finish tutorial","Reach first new area","Complete main quest","Defeat a boss","Finish main campaign"],completion:["Finish story","Complete side quests","Collect all key items","Unlock major achievements","Finish final challenge"]};
+let games=[],activeId=null,hydrated=false,confirmDelete=null,resetPending=false;
+const task=(title,category="General")=>({id:uid(),title,category,done:false});
+const create=(name,template)=>({id:uid(),name,objectives:(templates[template]||[]).map(t=>task(t,template==="nuzlocke"?"Nuzlocke":template==="rpg"?"Quests":"Completion"))});
+const normTask=t=>({id:typeof t?.id==="string"?t.id.slice(0,90):uid(),title:typeof t?.title==="string"&&t.title.trim()?t.title.slice(0,120):"Milestone",category:typeof t?.category==="string"?t.category.slice(0,35):"General",done:t?.done===true});
+const normGame=g=>({id:typeof g?.id==="string"?g.id.slice(0,90):uid(),name:typeof g?.name==="string"&&g.name.trim()?g.name.slice(0,72):"Campaign",objectives:Array.isArray(g?.objectives)?g.objectives.slice(0,300).map(normTask):[]});
+const current=()=>games.find(g=>g.id===activeId)||null;
+const persistence=createSaveGuard(()=>({games,activeId}),v=>{games=v.games;activeId=v.activeId});
+const save=()=>persistence.save();
+function render(){
+ $("badge").textContent=games.length+" game"+(games.length===1?"":"s");
+ $("games").innerHTML=games.length?games.map(g=>'<button data-game="'+esc(g.id)+'" class="'+(g.id===activeId?"soft":"")+'">'+esc(g.name)+'</button>').join(""):'<span class="muted">Create a game below to get started.</span>';
+ const g=current();$("deleteGame").hidden=!g;
+ const done=g?g.objectives.filter(t=>t.done).length:0,total=g?g.objectives.length:0,pct=total?Math.round(done/total*100):0;
+ $("current").textContent=g?g.name:"Select a game";$("summary").textContent=done+" of "+total+" objectives complete";$("fraction").textContent=pct+"%";$("fill").style.width=pct+"%";
+ $("resetGame").disabled=!g||!done;$("resetGame").textContent=resetPending?"Confirm reset":"Reset progress";$("resetGame").className=resetPending?"danger":"";
+ $("deleteGame").textContent=confirmDelete===g?.id?"Confirm delete":"Delete game";$("objectiveText").disabled=!g;$("category").disabled=!g;
+ $("objectives").innerHTML=g?(g.objectives.length?g.objectives.map(t=>'<article class="item"><div class="row"><div><div class="itemTitle">'+(t.done?"✓ ":"")+esc(t.title)+'</div><div class="meta"><span class="pill '+(t.done?"done":"")+'">'+esc(t.category||"General")+'</span><span>'+(t.done?"Complete":"In progress")+'</span></div></div><button class="'+(t.done?"soft":"")+'" data-act="toggle" data-id="'+esc(t.id)+'">'+(t.done?"↶ Undo":"✓ Done")+'</button></div><div class="actions"><button class="danger" data-act="remove" data-id="'+esc(t.id)+'">Remove</button></div></article>').join(""):'<div class="empty">No objectives. Add one below.</div>'):'<div class="empty">Create or select a game first.</div>';
+}
+$("gameForm").addEventListener("submit",e=>{e.preventDefault();if(!hydrated)return;if(games.length>=60)return persistence.warn("This tracker supports up to 60 games. Remove a game before adding another.");const name=$("gameName").value.trim();if(!name)return;const g=create(name.slice(0,72),$("template").value);games.push(g);activeId=g.id;if(save())$("gameName").value="";render()});
+$("games").addEventListener("click",e=>{const b=e.target.closest("[data-game]");if(!b||!hydrated)return;activeId=b.dataset.game;confirmDelete=null;resetPending=false;save();render()});
+$("objectiveForm").addEventListener("submit",e=>{e.preventDefault();if(!hydrated)return;const g=current(),t=$("objectiveText").value.trim();if(!g||!t)return;if(g.objectives.length>=300)return persistence.warn("Each game supports up to 300 objectives. Remove an objective before adding another.");g.objectives.push(task(t.slice(0,120),$("category").value.trim().slice(0,35)||"General"));if(save())$("objectiveText").value="";render()});
+$("objectives").addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b||!hydrated)return;const g=current(),t=g?.objectives.find(x=>x.id===b.dataset.id);if(!t)return;if(b.dataset.act==="toggle")t.done=!t.done;else if(b.dataset.act==="remove")g.objectives=g.objectives.filter(x=>x.id!==t.id);save();render()});
+$("deleteGame").onclick=()=>{const g=current();if(!g||!hydrated)return;if(confirmDelete!==g.id){confirmDelete=g.id;render();return}games=games.filter(x=>x.id!==g.id);activeId=games[0]?.id||null;confirmDelete=null;save();render()};
+$("resetGame").onclick=()=>{const g=current();if(!g||!hydrated)return;if(!resetPending){resetPending=true;render();return}resetPending=false;g.objectives.forEach(t=>t.done=false);save();render()};
+addEventListener("message",e=>{if(e.source!==parent||!e.data||typeof e.data!=="object")return;const m=e.data;
+ if(m.type==="cdp:theme"){applyTheme(m.theme)}
+ else if(m.type==="cdp:init"){applyTheme(m.theme);parent.postMessage({type:"cdp:storage:get",requestId:"games-load"},"*")}
+ else if(m.type==="cdp:storage:value"&&m.requestId==="games-load"&&!hydrated){hydrated=true;if(Array.isArray(m.value?.games))games=m.value.games.slice(0,60).map(normGame);activeId=typeof m.value?.activeId==="string"&&games.some(g=>g.id===m.value.activeId)?m.value.activeId:games[0]?.id||null;persistence.remember();render()}
+});
+// Browser-source protocol v1: public display fields only. CDP owns the URL and opt-in.
+function publishBrowserSource(){
+ if(!hydrated)return;
+ parent.postMessage({type:"cdp:browser-source",value:{version:1,kind:"progress",title:current()?.name||"Game Progress",scope:current()?.id||"",items:(current()?.objectives||[]).map(t=>({id:t.id,label:t.title,done:t.done}))}},"*");
+}
+const drawForDashboard=render;
+render=function(){drawForDashboard();publishBrowserSource()};
+setInterval(publishBrowserSource,1000);
+render()
+})();
+</script></body></html>
