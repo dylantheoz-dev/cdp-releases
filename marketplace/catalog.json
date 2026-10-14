@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-12T20:55:00Z",
+  "updatedAt": "2026-10-14T02:54:04.301Z",
   "items": [
     {
       "id": "cdp.goal-tracker",
@@ -167,13 +167,13 @@
       "id": "cdp.command-reference",
       "kind": "widget",
       "publicationStatus": "published",
-      "name": "Chat Command Reference",
-      "description": "Keep a searchable library of bot commands, permission notes, cooldowns, and favorite commands without executing them.",
+      "name": "Chat Command Reference (Coming in 0.2.9)",
+      "description": "Coming with CDP 0.2.9 — not yet available to install. The full release will show commands from connected Firebot and Mix It Up, plus Streamer.bot actions. Existing 0.2.8 installations can continue using their manual command notes.",
       "version": "1.0.1",
       "publisher": "Creator Dashboard Pro",
       "category": "Creator Utilities",
       "icon": "⌨️",
-      "minimumCdpVersion": "0.2.8",
+      "minimumCdpVersion": "0.2.9",
       "integritySha256": "8646dd6a68cffdbeab4f7da81cba6e22ce42446eff0d5801facd5c2bc711ffaf",
       "allowMultiple": true,
       "defaultWidth": 580,
@@ -186,7 +186,8 @@
         "Firebot",
         "Mix It Up",
         "Streamer.bot",
-        "Reference"
+        "Reference",
+        "Coming in 0.2.9"
       ],
       "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.command-reference/1.0.1/index.html"
     },
@@ -194,13 +195,13 @@
       "id": "cdp.collab-organizer",
       "kind": "widget",
       "publicationStatus": "published",
-      "name": "Collaboration Organizer",
-      "description": "Plan creator collaborations with names, games, dates, contact references, notes, and tracked confirmation statuses.",
+      "name": "Collaboration Organizer (Coming in 0.2.9)",
+      "description": "Coming with CDP 0.2.9 — not yet available to install. The full release will let you add confirmed collaborations to CDP's Stream Schedule manually or automatically. Existing 0.2.8 installations can continue using their saved plans.",
       "version": "1.0.1",
       "publisher": "Creator Dashboard Pro",
       "category": "Creator Utilities",
       "icon": "🤝",
-      "minimumCdpVersion": "0.2.8",
+      "minimumCdpVersion": "0.2.9",
       "integritySha256": "5c64c5163b30d892e806360b9717add2010efb53e5aee24f400e005f198b16a0",
       "allowMultiple": true,
       "defaultWidth": 580,
@@ -213,7 +214,8 @@
         "Planning",
         "Contacts",
         "Schedule",
-        "Marketplace"
+        "Marketplace",
+        "Coming in 0.2.9"
       ],
       "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.collab-organizer/1.0.1/index.html"
     }
