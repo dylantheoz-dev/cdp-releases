@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-15T00:00:00Z",
+  "updatedAt": "2026-10-16T00:00:00Z",
   "items": [
     {
       "id": "cdp.goal-tracker",
@@ -455,12 +455,12 @@
       "publicationStatus": "published",
       "name": "Chat Command Reference",
       "description": "View live read-only commands from connected Firebot and Mix It Up, plus Streamer.bot actions; retain manual reference entries. Requires CDP 0.2.9 for live sync.",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "publisher": "Creator Dashboard Pro",
       "category": "Creator Utilities",
       "icon": "⌨️",
       "minimumCdpVersion": "0.2.9",
-      "integritySha256": "6f246a29f223fda8f4ee95941519f866572c2ee39fa61af7f2065a6b21232999",
+      "integritySha256": "56ad9b8294cad31843666d62df89edbc6532c9519d1e57a3de5ef0c6743dd6f2",
       "allowMultiple": true,
       "defaultWidth": 580,
       "defaultHeight": 650,
@@ -476,8 +476,17 @@
         "Streamer.bot",
         "Reference"
       ],
-      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.command-reference/1.0.2/index.html",
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.command-reference/1.0.3/index.html",
       "previousReleases": [
+        {
+          "version": "1.0.2",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.command-reference/1.0.2/index.html",
+          "integritySha256": "6f246a29f223fda8f4ee95941519f866572c2ee39fa61af7f2065a6b21232999",
+          "minimumCdpVersion": "0.2.9",
+          "permissions": [
+            "bot:commands:read"
+          ]
+        },
         {
           "version": "1.0.1",
           "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.command-reference/1.0.1/index.html",
