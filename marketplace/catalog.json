@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-11T00:00:00Z",
+  "updatedAt": "2026-10-15T00:00:00Z",
   "items": [
     {
       "id": "cdp.goal-tracker",
@@ -83,7 +83,7 @@
     {
       "id": "cdp.counter-board",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Custom Counter Board",
       "description": "Track stream wins, deaths and custom counters with configurable increments, session resets and lifetime addition totals. Optional OBS display with CDP 0.2.9 browser-source support.",
       "version": "1.2.0",
@@ -185,7 +185,7 @@
     {
       "id": "cdp.run-of-show",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Run of Show Planner",
       "description": "Build a stream rundown with rearrangeable segments, timing estimates, talking points, a live segment timer and a completion checklist.",
       "version": "1.0.1",
@@ -220,7 +220,7 @@
     {
       "id": "cdp.game-progress",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Game Progress Tracker",
       "description": "Track games and achievements with editable objectives, progress bars, and starter templates including Pokémon Nuzlocke. Optional OBS display with CDP 0.2.9 browser-source support.",
       "version": "1.2.0",
@@ -267,7 +267,7 @@
     {
       "id": "cdp.highlight-notebook",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Highlight & Clip Notebook",
       "description": "Capture stream timestamps, memorable moments and editing notes, then move clips through a manual production workflow.",
       "version": "1.0.1",
@@ -302,7 +302,7 @@
     {
       "id": "cdp.command-reference",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Chat Command Reference",
       "description": "Keep a searchable library of bot commands, permission notes, cooldowns, and favorite commands without executing them.",
       "version": "1.0.1",
@@ -337,7 +337,7 @@
     {
       "id": "cdp.collab-organizer",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Collaboration Organizer",
       "description": "Plan creator collaborations with names, games, dates, contact references, notes, and tracked confirmation statuses.",
       "version": "1.0.1",

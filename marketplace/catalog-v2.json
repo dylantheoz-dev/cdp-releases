@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-11T00:00:00Z",
+  "updatedAt": "2026-10-15T00:00:00Z",
   "items": [
     {
       "id": "cdp.goal-tracker",
@@ -233,7 +233,7 @@
     {
       "id": "cdp.counter-board",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Custom Counter Board",
       "description": "Track stream wins, deaths and custom counters with configurable increments, session resets and lifetime addition totals. Optional OBS display with CDP 0.2.9 browser-source support.",
       "version": "1.2.0",
@@ -280,7 +280,7 @@
     {
       "id": "cdp.challenge-wheel",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Challenge & Punishment Wheel",
       "description": "Spin a customizable challenge wheel with weighted odds, excluded entries, animated selection and recent results. Optional OBS display with CDP 0.2.9 browser-source support.",
       "version": "1.3.0",
@@ -335,7 +335,7 @@
     {
       "id": "cdp.run-of-show",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Run of Show Planner",
       "description": "Build a stream rundown with rearrangeable segments, timing estimates, talking points, a live segment timer and a completion checklist.",
       "version": "1.0.1",
@@ -370,7 +370,7 @@
     {
       "id": "cdp.game-progress",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Game Progress Tracker",
       "description": "Track games and achievements with editable objectives, progress bars, and starter templates including Pokémon Nuzlocke. Optional OBS display with CDP 0.2.9 browser-source support.",
       "version": "1.2.0",
@@ -417,7 +417,7 @@
     {
       "id": "cdp.highlight-notebook",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Highlight & Clip Notebook",
       "description": "Capture stream timestamps, memorable moments and editing notes, then move clips through a manual production workflow.",
       "version": "1.0.1",
@@ -452,7 +452,7 @@
     {
       "id": "cdp.command-reference",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Chat Command Reference",
       "description": "View live read-only commands from connected Firebot and Mix It Up, plus Streamer.bot actions; retain manual reference entries. Requires CDP 0.2.9 for live sync.",
       "version": "1.0.2",
@@ -495,7 +495,7 @@
     {
       "id": "cdp.collab-organizer",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Collaboration Organizer",
       "description": "Plan collaborations and add them manually or automatically upon confirmation to CDP Stream Schedule. Requires CDP 0.2.9 for schedule integration.",
       "version": "1.0.2",
@@ -538,7 +538,7 @@
     {
       "id": "cdp.twitch-predictions",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Twitch Predictions",
       "description": "Manage real Twitch Channel Points predictions with host-confirmed changes and an OBS totals display. Requires an eligible Twitch channel.",
       "version": "1.0.0",
@@ -566,7 +566,7 @@
     {
       "id": "cdp.random-loadout",
       "kind": "widget",
-      "publicationStatus": "testing",
+      "publicationStatus": "published",
       "name": "Random Loadout Generator",
       "description": "Roll custom weapons, restrictions and bonus challenges, with optional Twitch chat/reward triggers and an OBS display.",
       "version": "1.0.0",
