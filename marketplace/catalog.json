@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-15T00:00:00Z",
+  "updatedAt": "2026-10-16T00:00:00Z",
   "items": [
     {
       "id": "cdp.goal-tracker",
@@ -302,7 +302,7 @@
     {
       "id": "cdp.command-reference",
       "kind": "widget",
-      "publicationStatus": "published",
+      "publicationStatus": "testing",
       "name": "Chat Command Reference",
       "description": "Keep a searchable library of bot commands, permission notes, cooldowns, and favorite commands without executing them.",
       "version": "1.0.1",

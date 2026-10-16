@@ -452,7 +452,7 @@
     {
       "id": "cdp.command-reference",
       "kind": "widget",
-      "publicationStatus": "published",
+      "publicationStatus": "testing",
       "name": "Chat Command Reference",
       "description": "View live read-only commands from connected Firebot and Mix It Up, plus Streamer.bot actions; retain manual reference entries. Requires CDP 0.2.9 for live sync.",
       "version": "1.0.3",
