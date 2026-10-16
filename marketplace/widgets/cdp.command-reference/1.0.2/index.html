@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chat Command Reference</title><style>
+:root{--accent:#8b5cf6;--accent-strong:#7c3aed;--accent-text:#c4b5fd;--accent-soft:rgba(139,92,246,.16);--surface:#111827;--surface-hover:#263348;--text-primary:#f8fafc;--text-secondary:#94a3b8;--border:#334155;--danger-text:#fca5a5;font-family:Segoe UI,system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;min-width:0;background:transparent;color:var(--text-primary)}body{font-size:13px}main{display:grid;gap:11px}.top,.row,.heading,.actions{display:flex;align-items:center;justify-content:space-between;gap:8px}.top{padding-bottom:10px;border-bottom:1px solid var(--border)}.eyebrow{font-size:10px;color:var(--accent-text);font-weight:850;letter-spacing:.1em;text-transform:uppercase}h2{margin:3px 0;font-size:19px}h3{margin:0;font-size:13px}.sub,.muted{font-size:11px;color:var(--text-secondary);line-height:1.5}.badge{font-size:10px;color:var(--accent-text);border:1px solid var(--border);border-radius:99px;background:var(--accent-soft);padding:5px 8px}
+.panel,.stat{padding:11px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}.statRow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.stat strong{display:block;font-size:19px}.stat span{font-size:10px;color:var(--text-secondary)}
+button,input,select,textarea{font:inherit;min-width:0;border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text-primary);background:var(--surface-hover)}button{cursor:pointer}button:hover:not(:disabled){border-color:var(--accent)}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button:disabled{opacity:.5;cursor:default}.primary{color:white;font-weight:850;border-color:var(--accent);background:linear-gradient(130deg,var(--accent-strong),var(--accent))}.soft{background:var(--accent-soft);color:var(--accent-text);border-color:var(--accent)}.danger{color:var(--danger-text)}
+.field{display:grid;gap:4px}.field span{font-size:10px;font-weight:750;color:var(--text-secondary)}.field input,.field select,.field textarea{width:100%}.field textarea{resize:vertical;min-height:55px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.filter{display:grid;grid-template-columns:1.5fr 1fr;gap:8px;margin-top:9px}
+.items{display:grid;gap:7px}.item{padding:10px;border-radius:10px;background:var(--surface-hover);border:1px solid var(--border);display:grid;gap:7px}.item:hover{border-color:var(--accent)}.command{font-size:15px;font-weight:900;color:var(--accent-text);overflow-wrap:anywhere}.meta,.actions{display:flex;flex-wrap:wrap;gap:7px}.meta{font-size:10px;color:var(--text-secondary)}.pill{padding:4px 7px;border:1px solid var(--border);border-radius:7px}.description{font-size:11px;color:var(--text-secondary);white-space:pre-wrap;overflow-wrap:anywhere}.actions{justify-content:flex-start}.actions button{padding:6px 9px;font-size:11px}.empty{text-align:center;padding:20px;color:var(--text-secondary)}.footer{padding-top:9px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;align-items:center}
+@media(max-width:480px){.grid,.filter{grid-template-columns:1fr}.top{flex-wrap:wrap}.stat strong{font-size:16px}}
+#storageNotice{margin:0;padding:9px 11px;border:1px solid var(--border);border-radius:8px;color:var(--danger-text);background:var(--surface);font-size:12px}
+.syncStatus{border:1px solid var(--border);border-radius:9px;padding:9px;margin-top:9px;background:var(--surface-hover);font-size:10px;line-height:1.5;color:var(--text-secondary)}
+.syncTags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.syncTags span{border:1px solid var(--border);padding:5px 8px;border-radius:7px;color:var(--text-secondary)}.syncTags span.connected{color:var(--accent-text);background:var(--accent-soft);border-color:var(--accent)}
+.liveRow{margin:6px 0;padding:9px;border:1px solid var(--border);border-radius:8px;background:var(--surface-hover)}.liveRow strong{color:var(--accent-text);font-size:12px;overflow-wrap:anywhere}.liveRow p{font-size:10px;color:var(--text-secondary);margin:4px 0 0}.liveRow small{font-size:10px;color:var(--text-secondary)}.liveList{max-height:260px;overflow-y:auto;display:grid;gap:3px}
+</style></head><body><main>
+<p id="storageNotice" role="status" aria-live="polite" hidden></p>
+<header class="top"><div><div class="eyebrow">Creator knowledge base</div><h2>Chat Command Reference</h2><p class="sub">Find commands without switching bot dashboards</p></div><span id="badge" class="badge">0 commands</span></header>
+<section class="statRow"><div class="stat"><strong id="total">0</strong><span>Saved commands</span></div><div class="stat"><strong id="tools">0</strong><span>Bot services</span></div><div class="stat"><strong id="favourites">0</strong><span>Favorites</span></div></section>
+<section class="panel"><div class="heading"><h3>Connected bot commands and actions</h3><button type="button" id="refreshBots">Refresh view</button></div>
+<div id="syncStatus" class="syncStatus">Waiting for CDP bot integration data. Requires CDP 0.2.9.</div>
+<div class="syncTags" id="syncSources"></div><div id="liveList" class="liveList"></div></section>
+<section class="panel"><div class="heading"><h3 id="formTitle">Add manual command</h3><button id="cancel" type="button" hidden>Cancel edit</button></div><form id="form" style="display:grid;gap:8px;margin-top:9px"><div class="grid"><label class="field"><span>Chat command</span><input id="command" placeholder="!lurk" maxlength="65" required></label><label class="field"><span>Bot / service</span><select id="service"><option>Firebot</option><option>Mix It Up</option><option>Streamer.bot</option><option>Wizebot</option><option>Nightbot</option><option>Other</option></select></label><label class="field"><span>Who can use it?</span><input id="permission" placeholder="Everyone" maxlength="65"></label><label class="field"><span>Cooldown / requirements</span><input id="cooldown" placeholder="30s / subscriber only" maxlength="65"></label></div><label class="field"><span>What does it do?</span><textarea id="description" maxlength="700" placeholder="Describe the response, trigger or action."></textarea></label><button type="submit" class="primary" id="submit">＋ Save command</button></form></section>
+<section class="panel"><div class="heading"><h3>Manual command notes</h3><span class="muted">Search manual and connected lists</span></div><div class="filter"><input id="search" type="search" placeholder="Search commands or descriptions" aria-label="Search commands"><select id="filter" aria-label="Filter bot"><option value="all">All services</option><option>Firebot</option><option>Mix It Up</option><option>Streamer.bot</option><option>Wizebot</option><option>Nightbot</option><option>Other</option><option value="favorites">Favorites only</option></select></div><div id="list" class="items" style="margin-top:9px"></div></section>
+<footer class="footer"><span class="muted">Reference only: no bot commands are executed.</span><span class="muted">Saved in CDP</span></footer>
+</main><script>
+(()=>{
+"use strict";
+
+// Keep rejected changes out of the host's 256 KiB per-instance storage budget.
+// The storage protocol has no acknowledgement; this guards size, not disk failures.
+function createSaveGuard(readState,restoreState){
+ let snapshot;
+ const notice=message=>{const el=document.getElementById("storageNotice");el.textContent=message;el.hidden=!message;return false};
+ return{
+  remember(){snapshot=JSON.stringify(readState())},
+  warn:notice,
+  save(){
+   const value=readState(),serialized=JSON.stringify(value);
+   if(new TextEncoder().encode(serialized).byteLength>256*1024){
+    if(snapshot!==undefined)restoreState(JSON.parse(snapshot));
+    return notice("This change exceeds the widget's storage limit. Shorten notes or remove older items and try again.");
+   }
+   parent.postMessage({type:"cdp:storage:set",value},"*");
+   snapshot=serialized;notice("");return true;
+  }
+ };
+}
+function applyTheme(theme){
+ for(const[k,v]of Object.entries(theme||{}))if(typeof v==="string"&&v.trim()){
+  document.documentElement.style.setProperty("--"+k.replace(/[A-Z]/g,c=>"-"+c.toLowerCase()),v);
+  if(k==="colorScheme"&&(v==="light"||v==="dark"))document.documentElement.style.colorScheme=v;
+ }
+}
+
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const services=["Firebot","Mix It Up","Streamer.bot","Wizebot","Nightbot","Other"];
+let commands=[],hydrated=false,editId=null,confirmDelete=null,liveEntries=[],liveSources=[],syncReceived=false;
+const norm=x=>({id:typeof x?.id==="string"?x.id.slice(0,90):uid(),command:typeof x?.command==="string"?x.command.trim().slice(0,65):"!command",service:services.includes(x?.service)?x.service:"Other",permission:typeof x?.permission==="string"?x.permission.slice(0,65):"",cooldown:typeof x?.cooldown==="string"?x.cooldown.slice(0,65):"",description:typeof x?.description==="string"?x.description.slice(0,700):"",favorite:x?.favorite===true});
+const persistence=createSaveGuard(()=>({commands}),v=>{commands=v.commands});
+const save=()=>persistence.save();
+function render(){
+ $("badge").textContent=(commands.length+liveEntries.length)+" entries";$("total").textContent=commands.length+liveEntries.length;$("tools").textContent=new Set([...commands.map(c=>c.service),...liveEntries.map(c=>c.source)]).size;$("favourites").textContent=commands.filter(c=>c.favorite).length;
+ const q=$("search").value.toLowerCase().trim(),f=$("filter").value;
+ const list=commands.filter(c=>(f==="all"||f==="favorites"&&c.favorite||f===c.service)&&(!q||[c.command,c.service,c.description,c.permission,c.cooldown].join(" ").toLowerCase().includes(q)));
+ const connected=liveSources.filter(s=>s.connected).length;
+ $("syncStatus").textContent=syncReceived?connected+" of "+liveSources.length+" supported bot connections available. Streamer.bot entries are actions, not verified chat commands.": "Waiting for connected bot data from CDP 0.2.9.";
+ $("syncSources").innerHTML=liveSources.map(s=>'<span class="'+(s.connected?"connected":"")+'">'+esc(s.name)+': '+(s.connected?"Connected":"Offline")+'</span>').join("");
+ const live=liveEntries.filter(e=>(f==="all"||f===e.source)&&(!q||[e.label,e.source,e.category,e.detail].join(" ").toLowerCase().includes(q)));
+ $("liveList").innerHTML=live.length?live.map(e=>'<div class="liveRow"><strong>'+esc(e.label)+'</strong><div class="meta"><span>'+esc(e.source)+'</span><span>'+esc(e.category)+'</span><span>'+(e.enabled?"Enabled":"Disabled")+'</span></div>'+(e.detail?'<p>'+esc(e.detail)+'</p>':"")+'</div>').join(""):'<div class="muted">No matching live commands or actions from connected services.</div>';
+ $("list").innerHTML=list.length?list.map(c=>'<article class="item"><div class="row"><div><div class="command">'+esc(c.command)+'</div><div class="meta"><span class="pill">'+esc(c.service)+'</span><span>'+esc(c.permission||"Everyone")+'</span><span>'+esc(c.cooldown||"No cooldown specified")+'</span></div></div><button class="'+(c.favorite?"soft":"")+'" data-act="star" data-id="'+esc(c.id)+'">'+(c.favorite?"★ Saved":"☆ Favorite")+'</button></div>'+(c.description?'<div class="description">'+esc(c.description)+'</div>':"")+'<div class="actions"><button data-act="edit" data-id="'+esc(c.id)+'">Edit</button><button class="danger" data-act="remove" data-id="'+esc(c.id)+'">'+(confirmDelete===c.id?"Confirm delete":"Delete")+'</button></div></article>').join(""):'<div class="empty">No matching commands. Add your first reference above.</div>';
+}
+function cancel(){editId=null;$("form").reset();$("formTitle").textContent="Add command";$("submit").textContent="＋ Save command";$("cancel").hidden=true}
+$("cancel").onclick=cancel;
+$("form").addEventListener("submit",e=>{e.preventDefault();if(!hydrated)return;const text=$("command").value.trim();if(!text)return;
+ const data={command:text.slice(0,65),service:$("service").value,permission:$("permission").value.slice(0,65),cooldown:$("cooldown").value.slice(0,65),description:$("description").value.slice(0,700)};
+ if(editId){const c=commands.find(c=>c.id===editId);if(c)Object.assign(c,data)}else if(commands.length>=300)return persistence.warn("This widget supports up to 300 commands. Remove an item before adding another.");else commands.push({...data,id:uid(),favorite:false});if(save())cancel();render()
+});
+$("list").addEventListener("click",e=>{const b=e.target.closest("button[data-act]");if(!b||!hydrated)return;const c=commands.find(c=>c.id===b.dataset.id);if(!c)return;
+ if(b.dataset.act==="star"){c.favorite=!c.favorite;save();render()}
+ if(b.dataset.act==="edit"){editId=c.id;for(const id of ["command","service","permission","cooldown","description"])$(id).value=c[id];$("formTitle").textContent="Edit command";$("submit").textContent="Save changes";$("cancel").hidden=false}
+ if(b.dataset.act==="remove"){if(confirmDelete!==c.id){confirmDelete=c.id;render();return}commands=commands.filter(x=>x.id!==c.id);confirmDelete=null;if(editId===c.id)cancel();save();render()}
+});
+$("search").addEventListener("input",render);$("filter").addEventListener("change",render);
+$("refreshBots").onclick=()=>parent.postMessage({type:"cdp:commands:request"},"*");
+addEventListener("message",e=>{if(e.source!==parent||!e.data||typeof e.data!=="object")return;const m=e.data;
+ if(m.type==="cdp:theme"){applyTheme(m.theme)}
+ else if(m.type==="cdp:init"){applyTheme(m.theme);parent.postMessage({type:"cdp:storage:get",requestId:"commands-load"},"*");parent.postMessage({type:"cdp:commands:request"},"*")}
+ else if(m.type==="cdp:commands:snapshot"&&m.catalog&&typeof m.catalog==="object"){
+  syncReceived=true;liveSources=Array.isArray(m.catalog.sources)?m.catalog.sources.filter(s=>["Firebot","Mix It Up","Streamer.bot"].includes(s?.name)).slice(0,3).map(s=>({name:s.name,connected:s.connected===true})):[];
+  liveEntries=Array.isArray(m.catalog.entries)?m.catalog.entries.filter(e=>["Firebot","Mix It Up","Streamer.bot"].includes(e?.source)&&typeof e.label==="string").slice(0,1000).map(e=>({
+    source:e.source,label:e.label.slice(0,90),category:typeof e.category==="string"?e.category.slice(0,40):"Action",
+    detail:typeof e.detail==="string"?e.detail.slice(0,180):"",enabled:e.enabled===true
+  })):[];
+  render()
+ }
+ else if(m.type==="cdp:storage:value"&&m.requestId==="commands-load"&&!hydrated){hydrated=true;if(Array.isArray(m.value?.commands))commands=m.value.commands.slice(0,300).map(norm);persistence.remember();render()}
+});render()
+})();
+</script></body></html>

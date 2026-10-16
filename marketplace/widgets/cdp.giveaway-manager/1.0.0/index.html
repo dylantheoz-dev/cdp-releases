@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Giveaway Manager</title><style>
+:root{--accent:#8b5cf6;--text-primary:#f8fafc;--text-secondary:#94a3b8;--surface:#111827;--border:#334155;color-scheme:dark;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:transparent;color:var(--text-primary);font:13px/1.45 Inter,system-ui,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--border);border-radius:9px;padding:8px 11px;background:color-mix(in srgb,var(--surface) 85%,#000 15%);color:var(--text-primary);font-weight:650}
+button:hover:not(:disabled){border-color:var(--accent)}button:disabled{opacity:.5;cursor:not-allowed}
+button.primary{background:var(--accent);border-color:var(--accent);color:white}button.warn{color:#fda4af}
+h2,h3,p{margin:0}.muted,small{color:var(--text-secondary);font-size:.73rem}
+.shell{display:grid;gap:12px}.top,.line,.actions{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.top h2{font-size:1rem}.pill{font-size:.72rem;color:var(--accent);border:1px solid var(--border);border-radius:999px;padding:4px 9px;font-weight:700}
+.panel{padding:12px;background:color-mix(in srgb,var(--surface) 85%,#000 15%);border:1px solid var(--border);border-radius:12px}
+.feature{border-color:color-mix(in srgb,var(--accent) 53%,var(--border));background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+h3{font-size:.83rem}.winner{font-weight:900;font-size:1.27rem;overflow-wrap:anywhere;margin:6px 0}.empty{color:var(--text-secondary);font-size:.85rem;font-weight:500}
+.actions{justify-content:flex-start;flex-wrap:wrap;margin-top:9px}.actions button{flex:1 1 auto}
+textarea,input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:9px}
+textarea{min-height:62px;max-height:140px;resize:vertical}
+label{display:grid;gap:5px;color:var(--text-secondary);font-size:.73rem}.hint{margin-top:5px;color:var(--text-secondary);font-size:.72rem}
+.list{display:grid;gap:5px;max-height:195px;overflow:auto}.entry{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border:1px solid var(--border);border-radius:8px}.entry span{font-weight:650;overflow-wrap:anywhere;min-width:0}.entry button{padding:4px 7px;font-size:.74rem}
+.history{display:flex;flex-wrap:wrap;gap:6px}.history span{border:1px solid var(--border);border-radius:999px;padding:4px 8px;font-size:.74rem;color:var(--text-secondary);overflow-wrap:anywhere}
+#notice{min-height:1em;font-size:.72rem;color:var(--text-secondary);margin-top:6px}#notice.error{color:#fda4af}
+@media(max-width:430px){.line{align-items:flex-start}.top{align-items:flex-start}}
+</style></head>
+<body><div class="shell">
+<div class="top"><div><h2>🎁 Giveaway Manager</h2><small>Free-entry, manual giveaway</small></div><span id="total" class="pill">0 entries</span></div>
+<section class="panel feature" aria-label="Giveaway drawing">
+<div class="line"><h3>Latest Winner</h3><small id="drawCount">0 draws</small></div>
+<div id="winner" class="winner empty">No winner drawn yet</div>
+<div class="actions"><button id="draw" class="primary">🎲 Draw Winner</button><button id="reset" class="warn">Reset Giveaway</button></div>
+<p class="hint">One chance per participant. Winners are removed from eligible entries.</p>
+</section>
+<section class="panel"><label for="names">Add entries (one username per line)</label>
+<textarea id="names" maxlength="5000" placeholder="Viewer1&#10;Viewer2"></textarea>
+<div class="actions"><button id="add" class="primary">＋ Add Entries</button><button id="clear" class="warn">Clear Entries</button></div><div id="notice" role="status" aria-live="polite"></div></section>
+<section class="panel"><div class="line" style="margin-bottom:8px"><h3>Eligible Participants</h3><small id="eligible"></small></div><div id="list" class="list"></div></section>
+<section class="panel"><h3 style="margin-bottom:8px">Previous Winners</h3><div id="history" class="history"><small>None yet.</small></div></section>
+<small>Local to this widget instance. No automatic Twitch chat entries, subscription gating, payments, or account access. Check your local giveaway rules.</small>
+</div>
+<script>
+(()=>{
+"use strict";
+const CAP=500,$=id=>document.getElementById(id);
+const state={entries:[],winners:[]};
+let ready=false;
+const nameOf=s=>typeof s==="string"?s.trim().slice(0,42):"";
+const valid=x=>x&&typeof x==="object"&&nameOf(x.name)?{name:nameOf(x.name),at:Number.isFinite(x.at)?x.at:Date.now()}:null;
+function save(){if(ready)parent.postMessage({type:"cdp:storage:set",value:state},"*")}
+function notice(s,bad=false){$("notice").textContent=s;$("notice").classList.toggle("error",bad)}
+function elem(tag,text){const x=document.createElement(tag);if(text!==undefined)x.textContent=text;return x}
+function render(){
+ $("total").textContent=state.entries.length+" eligible";
+ $("eligible").textContent=state.entries.length+" waiting";
+ $("drawCount").textContent=state.winners.length+" draw"+(state.winners.length===1?"":"s");
+ const x=$("winner");x.textContent=state.winners[0]?.name||"No winner drawn yet";x.classList.toggle("empty",state.winners.length===0);
+ $("draw").disabled=state.entries.length===0;
+ const list=$("list");list.replaceChildren();
+ if(!state.entries.length)list.appendChild(elem("small","Add participants above to begin."));
+ state.entries.forEach((item,i)=>{
+  const row=elem("div");row.className="entry";
+  row.appendChild(elem("span",item.name));
+  const remove=elem("button","Remove");remove.type="button";remove.setAttribute("aria-label","Remove "+item.name);
+  remove.addEventListener("click",()=>{state.entries.splice(i,1);save();render()});row.appendChild(remove);list.appendChild(row)
+ });
+ const history=$("history");history.replaceChildren();
+ if(!state.winners.length)history.appendChild(elem("small","None yet."));
+ state.winners.slice(0,12).forEach(item=>history.appendChild(elem("span",item.name)));
+}
+function add(){
+ const raw=$("names").value.split(/\r?\n|,/).map(nameOf).filter(Boolean);
+ if(!raw.length){notice("Enter at least one participant.",true);return}
+ const prior=new Set([...state.entries,...state.winners].map(e=>e.name.toLocaleLowerCase()));
+ let added=0,duplicates=0;
+ for(const name of raw){const key=name.toLocaleLowerCase();if(prior.has(key)){duplicates++;continue}if(state.entries.length>=CAP){notice("Entry limit reached ("+CAP+").",true);break}prior.add(key);state.entries.push({name,at:Date.now()});added++}
+ if(added){$("names").value="";save();render();notice("Added "+added+" participant"+(added===1?"":"s")+(duplicates?" ("+duplicates+" duplicate or prior winner skipped).":"."))}
+ else if(duplicates)notice("Already entered: "+duplicates+" duplicate"+(duplicates===1?"":"s")+".",true)
+}
+function randomIndex(n){
+ if(!globalThis.crypto||typeof globalThis.crypto.getRandomValues!=="function")throw Error("Secure random drawing is unavailable in this browser.");
+ const range=4294967296,limit=Math.floor(range/n)*n,buf=new Uint32Array(1);let v;
+ do{globalThis.crypto.getRandomValues(buf);v=buf[0]}while(v>=limit);
+ return v%n;
+}
+function draw(){
+ if(!state.entries.length)return;
+ try{const i=randomIndex(state.entries.length),[winner]=state.entries.splice(i,1);state.winners.unshift(winner);save();render();notice("Winner: "+winner.name)}
+ catch(e){notice(e instanceof Error?e.message:"Unable to draw a winner.",true)}
+}
+$("add").addEventListener("click",add);
+$("names").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();add()}});
+$("draw").addEventListener("click",draw);
+let clearArmedUntil=0;$("clear").addEventListener("click",()=>{if(!state.entries.length)return;const now=Date.now();if(now>clearArmedUntil){clearArmedUntil=now+4000;$("clear").textContent="Confirm Clear";notice("Click Confirm Clear within 4 seconds. Winners are kept.");setTimeout(()=>{if(Date.now()>clearArmedUntil)$("clear").textContent="Clear Entries";},4100);return}clearArmedUntil=0;$("clear").textContent="Clear Entries";state.entries=[];save();render();notice("Entries cleared.")});
+let resetArmedUntil=0;$("reset").addEventListener("click",()=>{if(!state.entries.length&&!state.winners.length)return;const now=Date.now();if(now>resetArmedUntil){resetArmedUntil=now+4000;$("reset").textContent="Confirm Reset";notice("Click Confirm Reset within 4 seconds to remove entries and winners.");setTimeout(()=>{if(Date.now()>resetArmedUntil)$("reset").textContent="Reset Giveaway";},4100);return}resetArmedUntil=0;$("reset").textContent="Reset Giveaway";state.entries=[];state.winners=[];save();render();notice("Giveaway reset.")});
+window.addEventListener("message",e=>{
+ if(e.source!==parent||!e.data||typeof e.data!=="object")return;
+ if(e.data.type==="cdp:init"){
+  const t=e.data.theme;if(t&&typeof t==="object")for(const key of ["accent","textPrimary","textSecondary","surface","border"]){
+   if(typeof t[key]==="string"&&t[key].trim())document.documentElement.style.setProperty("--"+key.replace(/[A-Z]/g,c=>"-"+c.toLowerCase()),t[key]);
+  }
+  parent.postMessage({type:"cdp:storage:get",requestId:"giveaway-v1"},"*");
+ }
+ if(e.data.type==="cdp:storage:value"&&e.data.requestId==="giveaway-v1"){
+  const v=e.data.value;
+  if(v&&typeof v==="object"){
+   state.entries=Array.isArray(v.entries)?v.entries.map(valid).filter(Boolean).slice(0,CAP):[];
+   state.winners=Array.isArray(v.winners)?v.winners.map(valid).filter(Boolean).slice(0,100):[];
+  }
+  ready=true;render()
+ }
+});
+render();
+})();
+</script></body></html>

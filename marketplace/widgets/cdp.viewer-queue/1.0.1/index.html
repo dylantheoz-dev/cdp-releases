@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Viewer Queue</title>
+<style>
+:root{--accent:#8b5cf6;--text-primary:#f8fafc;--text-secondary:#94a3b8;--surface:#111827;--border:#334155;color-scheme:dark;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:transparent;color:var(--text-primary);font:13px/1.45 Inter,system-ui,sans-serif}button,input,textarea{font:inherit}button{cursor:pointer}
+.layout{display:grid;gap:12px}.head,.rowTop,.actions,.meta{display:flex;align-items:center;gap:8px;justify-content:space-between}
+h2,h3,p{margin:0}h2{font-size:1rem}h3{font-size:.81rem}small,.muted{color:var(--text-secondary);font-size:.72rem}
+.pill{color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 36%,var(--border));padding:3px 9px;border-radius:999px;font-size:.72rem;font-weight:700}
+.panel{background:color-mix(in srgb,var(--surface) 85%,#000 15%);border:1px solid var(--border);border-radius:12px;padding:12px}
+.now{border-color:color-mix(in srgb,var(--accent) 55%,var(--border));background:color-mix(in srgb,var(--accent) 11%,var(--surface))}
+.current{font-size:1.15rem;font-weight:800;overflow-wrap:anywhere;padding:6px 0}.current.empty{color:var(--text-secondary);font-size:.85rem;font-weight:500}
+label{display:grid;gap:6px;color:var(--text-secondary);font-size:.74rem}
+textarea{resize:vertical;width:100%;min-height:56px;max-height:165px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px;color:var(--text-primary)}
+button{border:1px solid var(--border);border-radius:9px;background:color-mix(in srgb,var(--surface) 80%,#000 20%);color:var(--text-primary);padding:7px 11px;font-weight:650}
+button:hover:not(:disabled){border-color:var(--accent)}button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{border-color:var(--accent);background:var(--accent);color:#fff}button.danger{color:#fca5a5}
+.actions{justify-content:flex-start;flex-wrap:wrap}.actions button{flex:1 1 auto}
+.queue{display:grid;gap:7px;max-height:300px;overflow:auto}.item{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:9px;padding:8px 9px}
+.pos{min-width:24px;text-align:center;font-size:.7rem;color:var(--text-secondary)}
+.name{min-width:0;flex:1;overflow-wrap:anywhere;font-weight:700}
+.itemButtons{display:flex;gap:4px}.itemButtons button{padding:5px 8px;font-size:.72rem}
+.note{font-size:.72rem;min-height:1em;color:var(--text-secondary)}.note.error{color:#fca5a5}
+.history{display:flex;flex-wrap:wrap;gap:6px}.history span{font-size:.7rem;color:var(--text-secondary);padding:4px 8px;border:1px solid var(--border);border-radius:999px;overflow-wrap:anywhere}
+@media(max-width:430px){.item{flex-wrap:wrap}.itemButtons{width:100%;justify-content:flex-end}.head{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="head"><div><h2>Viewer Queue</h2><small>Community games · Ctrl+Enter to add</small></div><span id="queueCount" class="pill">0 waiting</span></div>
+  <section class="panel now" aria-label="Current player">
+    <div class="rowTop"><h3>🎮 Now Playing</h3><small id="activeSince"></small></div>
+    <div id="current" class="current empty">No viewer selected</div>
+    <div class="actions"><button id="next" class="primary">▶ Call Next</button><button id="complete">✓ Complete</button><button id="requeue">↩ Requeue</button></div>
+  </section>
+  <section class="panel">
+    <label for="viewerNames">Add viewers (one name per line)</label>
+    <textarea id="viewerNames" placeholder="Viewer1&#10;Viewer2" maxlength="1500"></textarea>
+    <div class="actions" style="margin-top:8px"><button id="add" class="primary">＋ Add to Queue</button><button id="clear" class="danger">Clear Waiting</button></div>
+    <div class="note" id="notice" role="status" aria-live="polite"></div>
+  </section>
+  <section class="panel"><div class="rowTop" style="margin-bottom:10px"><h3>Waiting Viewers</h3><small>Use arrows to change order</small></div><div id="waiting" class="queue"></div></section>
+  <section class="panel"><h3 style="margin-bottom:9px">Recently Completed</h3><div id="history" class="history"><small>None yet.</small></div></section>
+  <small>Each widget instance stores its own queue locally in CDP. This version does not read Twitch chat or automatically admit viewers.</small>
+</div>
+<script>
+(()=>{
+"use strict";
+const LIMIT=75;
+const $=id=>document.getElementById(id);
+const state={queue:[],active:null,history:[]};
+let ready=false;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const nameOf=v=>typeof v==="string"?v.trim().slice(0,42):"";
+const readEntry=x=>x&&typeof x==="object"&&nameOf(x.name)?{id:typeof x.id==="string"?x.id:uid(),name:nameOf(x.name),joined:Number.isFinite(x.joined)?x.joined:Date.now()}:null;
+function message(t){const el=$("notice");el.textContent=t;el.classList.toggle("error",t.startsWith("Limit")||t.startsWith("Already"))}
+function save(){if(ready)parent.postMessage({type:"cdp:storage:set",value:state},"*")}
+function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+function button(txt,label,run,disabled){const b=el("button",txt);b.type="button";b.setAttribute("aria-label",label);b.disabled=!!disabled;b.addEventListener("click",run);return b}
+function render(){
+ $("queueCount").textContent=state.queue.length+" waiting";
+ const cur=$("current");cur.textContent=state.active?state.active.name:"No viewer selected";cur.classList.toggle("empty",!state.active);
+ $("activeSince").textContent=state.active?"Selected":"";
+ $("next").disabled=state.queue.length===0;
+ $("complete").disabled=!state.active;
+ $("requeue").disabled=!state.active;
+ const root=$("waiting");root.replaceChildren();
+ if(!state.queue.length)root.appendChild(el("small","Nobody waiting. Add a name above."));
+ state.queue.forEach((item,i)=>{
+  const row=el("div",undefined,"item");const pos=el("span",String(i+1),"pos");const name=el("span",item.name,"name");const controls=el("div",undefined,"itemButtons");
+  controls.append(
+   button("↑","Move "+item.name+" up",()=>{if(i>0){[state.queue[i-1],state.queue[i]]=[state.queue[i],state.queue[i-1]];save();render()}},i===0),
+   button("↓","Move "+item.name+" down",()=>{if(i<state.queue.length-1){[state.queue[i+1],state.queue[i]]=[state.queue[i],state.queue[i+1]];save();render()}},i===state.queue.length-1),
+   button("✕","Remove "+item.name,()=>{state.queue.splice(i,1);save();render()})
+  );row.append(pos,name,controls);root.appendChild(row)
+ });
+ const h=$("history");h.replaceChildren();
+ if(!state.history.length)h.appendChild(el("small","None yet."));
+ state.history.slice(0,8).forEach(item=>h.appendChild(el("span",item.name)));
+}
+function complete(){
+ if(!state.active)return;
+ state.history.unshift(state.active);state.history=state.history.slice(0,20);state.active=null;save();render();
+}
+function next(){
+ if(!state.queue.length)return;
+ if(state.active){state.history.unshift(state.active);state.history=state.history.slice(0,20)}
+ state.active=state.queue.shift();save();render();message("Now playing: "+state.active.name);
+}
+function add(){
+ const raw=$("viewerNames").value.split(/\r?\n|,/).map(nameOf).filter(Boolean);
+ if(!raw.length){message("Enter at least one viewer name.");return}
+ const taken=new Set([...state.queue,...(state.active?[state.active]:[])].map(v=>v.name.toLocaleLowerCase()));
+ let count=0,duplicate=0;
+ for(const name of raw){
+  const key=name.toLocaleLowerCase();
+  if(taken.has(key)){duplicate++;continue}
+  if(state.queue.length>=LIMIT){message("Limit reached: maximum "+LIMIT+" waiting.");break}
+  state.queue.push({id:uid(),name,joined:Date.now()});taken.add(key);count++;
+ }
+ if(count){$("viewerNames").value="";save();render();message("Added "+count+" viewer"+(count===1?"":"s")+(duplicate?" ("+duplicate+" duplicate skipped).":".") )}
+ else if(duplicate)message("Already in queue: "+duplicate+" duplicate name"+(duplicate===1?"":"s")+".");
+}
+$("add").addEventListener("click",add);
+$("viewerNames").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();add()}});
+$("next").addEventListener("click",next);
+$("complete").addEventListener("click",complete);
+$("requeue").addEventListener("click",()=>{if(!state.active)return;state.queue.push(state.active);state.active=null;save();render();message("Viewer returned to the end of the queue.")});
+let clearArmedUntil=0;$("clear").addEventListener("click",()=>{if(!state.queue.length)return;const now=Date.now();if(now>clearArmedUntil){clearArmedUntil=now+4000;$("clear").textContent="Confirm Clear";message("Click Confirm Clear within 4 seconds. Current player is kept.");setTimeout(()=>{if(Date.now()>clearArmedUntil){$("clear").textContent="Clear Waiting";}},4100);return}clearArmedUntil=0;$("clear").textContent="Clear Waiting";state.queue=[];save();render();message("Waiting queue cleared.")});
+window.addEventListener("message",ev=>{
+ if(ev.source!==parent||!ev.data||typeof ev.data!=="object")return;
+ if(ev.data.type==="cdp:init"){
+  const t=ev.data.theme;
+  if(t&&typeof t==="object")for(const key of ["accent","textPrimary","textSecondary","surface","border"]){
+   if(typeof t[key]==="string"&&t[key].trim())document.documentElement.style.setProperty("--"+key.replace(/[A-Z]/g,c=>"-"+c.toLowerCase()),t[key]);
+  }
+  parent.postMessage({type:"cdp:storage:get",requestId:"viewer-queue-v1"},"*");
+ }
+ if(ev.data.type==="cdp:storage:value"&&ev.data.requestId==="viewer-queue-v1"){
+  const v=ev.data.value;
+  if(v&&typeof v==="object"){
+   state.queue=Array.isArray(v.queue)?v.queue.map(readEntry).filter(Boolean).slice(0,LIMIT):[];
+   state.active=readEntry(v.active);
+   state.history=Array.isArray(v.history)?v.history.map(readEntry).filter(Boolean).slice(0,20):[];
+  }
+  ready=true;render()
+ }
+});
+render();
+})();
+</script>
+</body>
+</html>

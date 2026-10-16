@@ -1,0 +1,106 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Collaboration Organizer</title><style>
+:root{--accent:#8b5cf6;--accent-strong:#7c3aed;--accent-text:#c4b5fd;--accent-soft:rgba(139,92,246,.16);--surface:#111827;--surface-hover:#263348;--text-primary:#f8fafc;--text-secondary:#94a3b8;--border:#334155;--danger-text:#fca5a5;font-family:Segoe UI,system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;min-width:0;background:transparent;color:var(--text-primary)}body{font-size:13px}main{display:grid;gap:11px}.top,.row,.heading,.actions{display:flex;align-items:center;justify-content:space-between;gap:8px}.top{border-bottom:1px solid var(--border);padding-bottom:10px}.eyebrow{font-size:10px;color:var(--accent-text);letter-spacing:.1em;font-weight:850;text-transform:uppercase}h2{font-size:19px;margin:3px 0}h3{margin:0;font-size:13px}.sub,.muted{font-size:11px;color:var(--text-secondary);line-height:1.5}.badge{font-size:10px;color:var(--accent-text);background:var(--accent-soft);border:1px solid var(--border);border-radius:99px;padding:5px 8px}
+.panel,.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.stat strong{font-size:20px;display:block}.stat span{font-size:10px;color:var(--text-secondary)}
+button,input,select,textarea{font:inherit;color:var(--text-primary);background:var(--surface-hover);border:1px solid var(--border);border-radius:8px;padding:8px;min-width:0}button{cursor:pointer}button:hover:not(:disabled){border-color:var(--accent)}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button:disabled{opacity:.5;cursor:default}.primary{background:linear-gradient(130deg,var(--accent-strong),var(--accent));color:white;font-weight:850;border-color:var(--accent)}.soft{background:var(--accent-soft);color:var(--accent-text);border-color:var(--accent)}.danger{color:var(--danger-text)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{display:grid;gap:4px}.field span{font-size:10px;color:var(--text-secondary);font-weight:750}.field input,.field textarea,.field select{width:100%}.field textarea{resize:vertical;min-height:56px}.filters{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin:9px 0}
+.items{display:grid;gap:7px}.item{display:grid;gap:8px;padding:10px;background:var(--surface-hover);border:1px solid var(--border);border-radius:10px}.item:hover{border-color:var(--accent)}.name{font-size:12px;font-weight:850;overflow-wrap:anywhere}.meta{display:flex;flex-wrap:wrap;gap:6px;font-size:10px;color:var(--text-secondary)}.pill{font-size:10px;border:1px solid var(--border);border-radius:7px;padding:4px 7px}.pill.done{background:var(--accent-soft);color:var(--accent-text)}.notes{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text-secondary);font-size:11px}.actions{justify-content:flex-start;flex-wrap:wrap}.actions button,.actions select{font-size:11px;padding:6px 9px}.empty{text-align:center;padding:20px;color:var(--text-secondary)}.footer{padding-top:10px;border-top:1px solid var(--border)}@media(max-width:480px){.grid,.filters{grid-template-columns:1fr}.top{flex-wrap:wrap}.stat strong{font-size:16px}}
+#storageNotice{margin:0;padding:9px 11px;border:1px solid var(--border);border-radius:8px;color:var(--danger-text);background:var(--surface);font-size:12px}
+.schedulePrefs{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--border);border-radius:9px;background:var(--accent-soft)}.schedulePrefs input{accent-color:var(--accent);flex:0 0 auto}.scheduleNotice{padding:8px 10px;border:1px solid var(--accent);border-radius:9px;color:var(--accent-text);font-size:11px}.scheduleHint{font-size:10px;color:var(--text-secondary);line-height:1.4}
+</style></head><body><main>
+<p id="storageNotice" role="status" aria-live="polite" hidden></p>
+<header class="top"><div><div class="eyebrow">Team &amp; community</div><h2>Collaboration Organizer</h2><p class="sub">Plan upcoming streams and remember who to invite</p></div><span id="badge" class="badge">0 plans</span></header>
+<section class="stats"><div class="stat"><strong id="total">0</strong><span>Collaborations</span></div><div class="stat"><strong id="upcoming">0</strong><span>Upcoming / proposed</span></div><div class="stat"><strong id="completed">0</strong><span>Completed</span></div></section>
+<section class="panel"><div class="heading"><h3 id="formHeading">Plan a collaboration</h3><button id="cancel" type="button" hidden>Cancel edit</button></div><form id="form" style="display:grid;gap:8px;margin-top:9px"><div class="grid"><label class="field"><span>Collaborator name / channel</span><input id="person" maxlength="80" placeholder="TwoskiGaming" required></label><label class="field"><span>Game or activity</span><input id="game" maxlength="85" placeholder="Pokopia" required></label><label class="field"><span>Date (optional)</span><input type="date" id="date"></label><label class="field"><span>Stream start time</span><input type="time" id="startTime"></label><label class="field"><span>Stream end time</span><input type="time" id="endTime"></label><label class="field"><span>Streaming platform</span><select id="platform"><option>Twitch</option><option>YouTube</option><option>Kick</option><option>Other</option></select></label><label class="field"><span>Plan status</span><select id="status"><option value="idea">Idea / invite</option><option value="planned">Planned</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="canceled">Canceled</option></select></label></div><label class="field"><span>Channel / Discord reference (plain text)</span><input id="contact" maxlength="150" placeholder="twitch.tv/channel or Discord handle"></label><label class="field"><span>Schedule notes / reminders</span><textarea id="notes" maxlength="1400" placeholder="Time, game plan, who's hosting, invitations, talking points…"></textarea></label><button id="submit" class="primary" type="submit">＋ Add collaboration</button></form><label class="schedulePrefs"><input id="autoSchedule" type="checkbox">Automatically add newly confirmed collaborations to CDP Stream Schedule</label><p class="scheduleHint">Requires a date, start time and end time. Existing Stream Schedule entries are not overwritten; calendar / Twitch sync remains separate.</p><p id="scheduleNotice" class="scheduleNotice" role="status" hidden></p></section>
+<section class="panel"><div class="heading"><h3>Plans &amp; contacts</h3><span class="muted">Search by name, game or note</span></div><div class="filters"><input type="search" id="search" placeholder="Search collaborations" aria-label="Search collaborations"><select id="filter" aria-label="Filter plan status"><option value="all">All statuses</option><option value="idea">Ideas</option><option value="planned">Planned</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="canceled">Canceled</option></select></div><div id="list" class="items"></div></section>
+<footer class="footer"><span class="muted">This organizer is manual; it does not send invitations or calendar events.</span></footer>
+</main><script>
+(()=>{
+"use strict";
+
+// Keep rejected changes out of the host's 256 KiB per-instance storage budget.
+// The storage protocol has no acknowledgement; this guards size, not disk failures.
+function createSaveGuard(readState,restoreState){
+ let snapshot;
+ const notice=message=>{const el=document.getElementById("storageNotice");el.textContent=message;el.hidden=!message;return false};
+ return{
+  remember(){snapshot=JSON.stringify(readState())},
+  warn:notice,
+  save(){
+   const value=readState(),serialized=JSON.stringify(value);
+   if(new TextEncoder().encode(serialized).byteLength>256*1024){
+    if(snapshot!==undefined)restoreState(JSON.parse(snapshot));
+    return notice("This change exceeds the widget's storage limit. Shorten notes or remove older items and try again.");
+   }
+   parent.postMessage({type:"cdp:storage:set",value},"*");
+   snapshot=serialized;notice("");return true;
+  }
+ };
+}
+function applyTheme(theme){
+ for(const[k,v]of Object.entries(theme||{}))if(typeof v==="string"&&v.trim()){
+  document.documentElement.style.setProperty("--"+k.replace(/[A-Z]/g,c=>"-"+c.toLowerCase()),v);
+  if(k==="colorScheme"&&(v==="light"||v==="dark"))document.documentElement.style.colorScheme=v;
+ }
+}
+
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const labels={idea:"Idea / invite",planned:"Planned",confirmed:"Confirmed",completed:"Completed",canceled:"Canceled"};
+let plans=[],hydrated=false,editId=null,confirmDelete=null,autoSchedule=false;
+const pendingSchedule=new Map();
+const norm=x=>({id:typeof x?.id==="string"?x.id.slice(0,90):uid(),person:typeof x?.person==="string"&&x.person.trim()?x.person.slice(0,80):"Collaborator",game:typeof x?.game==="string"?x.game.slice(0,85):"",date:typeof x?.date==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)?x.date:"",startTime:typeof x?.startTime==="string"?x.startTime.slice(0,5):"",endTime:typeof x?.endTime==="string"?x.endTime.slice(0,5):"",platform:["Twitch","YouTube","Kick","Other"].includes(x?.platform)?x.platform:"Twitch",scheduled:x?.scheduled===true,status:Object.prototype.hasOwnProperty.call(labels,x?.status)?x.status:"idea",contact:typeof x?.contact==="string"?x.contact.slice(0,150):"",notes:typeof x?.notes==="string"?x.notes.slice(0,1400):""});
+const persistence=createSaveGuard(()=>({plans,autoSchedule}),v=>{plans=v.plans;autoSchedule=v.autoSchedule===true});
+const save=()=>persistence.save();
+function announce(text){$("scheduleNotice").textContent=text;$("scheduleNotice").hidden=!text}
+function schedule(p){
+ if(!p||!hydrated)return;
+ if(!p.date||!p.startTime||!p.endTime){announce("Add a date, start time and end time to this collaboration before scheduling it.");return}
+ if([...pendingSchedule.values()].includes(p.id))return;
+ const requestId="collab-"+Date.now()+"-"+Math.random().toString(36).slice(2,8);
+ pendingSchedule.set(requestId,p.id);
+ announce("Adding "+p.person+" to CDP Stream Schedule…");
+ parent.postMessage({type:"cdp:schedule:add-collab",requestId,value:{
+  planId:p.id,person:p.person,game:p.game,date:p.date,startTime:p.startTime,endTime:p.endTime,
+  platform:p.platform,notes:p.notes
+ }},"*")
+}
+$("autoSchedule").addEventListener("change",e=>{
+ if(!hydrated)return;autoSchedule=e.target.checked;
+ if(save())announce(autoSchedule?"Future confirmations will be added to Stream Schedule when date and times are provided.":"Automatic scheduling is off.");
+ render()
+});
+function render(){
+ $("badge").textContent=plans.length+" plans";$("total").textContent=plans.length;$("upcoming").textContent=plans.filter(p=>["idea","planned","confirmed"].includes(p.status)).length;$("completed").textContent=plans.filter(p=>p.status==="completed").length;
+ $("autoSchedule").checked=autoSchedule;
+ const q=$("search").value.trim().toLowerCase(),f=$("filter").value;
+ const list=plans.filter(p=>(f==="all"||p.status===f)&&(!q||[p.person,p.game,p.contact,p.notes].join(" ").toLowerCase().includes(q))).sort((a,b)=>(a.date||"9999").localeCompare(b.date||"9999"));
+ $("list").innerHTML=list.length?list.map(p=>'<article class="item"><div class="row"><div><div class="name">'+esc(p.person)+' · '+esc(p.game)+'</div><div class="meta"><span class="pill '+(p.status==="completed"?"done":"")+'">'+esc(labels[p.status])+'</span><span>'+esc((p.date||"Date TBD")+(p.startTime?" · "+p.startTime+(p.endTime?"–"+p.endTime:""):""))+'</span></div></div></div>'+(p.contact?'<div class="muted">Contact: '+esc(p.contact)+'</div>':"")+(p.notes?'<div class="notes">'+esc(p.notes)+'</div>':"")+'<div class="actions"><select data-status="'+esc(p.id)+'" aria-label="Collaboration status">'+Object.entries(labels).map(([k,v])=>'<option value="'+k+'" '+(p.status===k?"selected":"")+'>'+esc(v)+'</option>').join("")+'</select><button data-act="schedule" data-id="'+esc(p.id)+'">'+(p.scheduled?"Add again / check":"Add to Stream Schedule")+'</button><button data-act="edit" data-id="'+esc(p.id)+'">Edit</button><button data-act="remove" class="danger" data-id="'+esc(p.id)+'">'+(confirmDelete===p.id?"Confirm delete":"Delete")+'</button></div></article>').join(""):'<div class="empty">Nothing matches yet. Plan a collaboration above.</div>';
+}
+function cancel(){editId=null;$("form").reset();$("formHeading").textContent="Plan a collaboration";$("submit").textContent="＋ Add collaboration";$("cancel").hidden=true}
+$("cancel").onclick=cancel;
+$("form").addEventListener("submit",e=>{e.preventDefault();if(!hydrated)return;const person=$("person").value.trim(),game=$("game").value.trim();if(!person||!game)return;
+ const data={person:person.slice(0,80),game:game.slice(0,85),date:$("date").value,startTime:$("startTime").value,endTime:$("endTime").value,platform:$("platform").value,status:Object.prototype.hasOwnProperty.call(labels,$("status").value)?$("status").value:"idea",contact:$("contact").value.slice(0,150),notes:$("notes").value.slice(0,1400)};
+ let updated=null,justConfirmed=false;
+ if(editId){const p=plans.find(x=>x.id===editId);if(p){justConfirmed=p.status!=="confirmed"&&data.status==="confirmed";Object.assign(p,data);updated=p}}else if(plans.length>=250)return persistence.warn("This widget supports up to 250 plans. Remove an item before adding another.");else {updated={...data,id:uid(),scheduled:false};plans.push(updated);justConfirmed=data.status==="confirmed"}if(save()){cancel();if(autoSchedule&&justConfirmed&&updated)schedule(updated)}render()
+});
+$("list").addEventListener("change",e=>{const id=e.target.dataset.status;if(!id||!hydrated)return;const p=plans.find(x=>x.id===id);if(p&&Object.prototype.hasOwnProperty.call(labels,e.target.value)){const newly=p.status!=="confirmed"&&e.target.value==="confirmed";p.status=e.target.value;if(save()&&newly&&autoSchedule)schedule(p);render()}});
+$("list").addEventListener("click",e=>{const b=e.target.closest("button[data-act]");if(!b||!hydrated)return;const p=plans.find(x=>x.id===b.dataset.id);if(!p)return;
+ if(b.dataset.act==="schedule"){schedule(p);return}
+ if(b.dataset.act==="edit"){editId=p.id;for(const k of ["person","game","date","startTime","endTime","platform","status","contact","notes"])$(k).value=p[k];$("formHeading").textContent="Edit collaboration";$("submit").textContent="Save changes";$("cancel").hidden=false}
+ if(b.dataset.act==="remove"){if(confirmDelete!==p.id){confirmDelete=p.id;render();return}plans=plans.filter(x=>x.id!==p.id);confirmDelete=null;if(editId===p.id)cancel();save();render()}
+});
+$("search").addEventListener("input",render);$("filter").addEventListener("change",render);
+addEventListener("message",e=>{if(e.source!==parent||!e.data||typeof e.data!=="object")return;const m=e.data;
+ if(m.type==="cdp:theme"){applyTheme(m.theme)}
+ else if(m.type==="cdp:init"){applyTheme(m.theme);parent.postMessage({type:"cdp:storage:get",requestId:"collabs-load"},"*")}
+ else if(m.type==="cdp:schedule:result"&&pendingSchedule.has(m.requestId)){
+  const id=pendingSchedule.get(m.requestId);pendingSchedule.delete(m.requestId);
+  if(m.status==="added"||m.status==="already-added"){
+   const p=plans.find(x=>x.id===id);if(p){p.scheduled=true;save()}
+   announce(m.status==="already-added"?"This collaboration is already on CDP Stream Schedule.":"Added to CDP Stream Schedule.");render()
+  }else announce(typeof m.message==="string"?m.message:"Could not add collaboration to Stream Schedule.")
+ }
+ else if(m.type==="cdp:storage:value"&&m.requestId==="collabs-load"&&!hydrated){hydrated=true;if(Array.isArray(m.value?.plans))plans=m.value.plans.slice(0,250).map(norm);autoSchedule=m.value?.autoSchedule===true;persistence.remember();render()}
+});render()
+})();
+</script></body></html>

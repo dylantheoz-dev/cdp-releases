@@ -1,0 +1,595 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-11T00:00:00Z",
+  "items": [
+    {
+      "id": "cdp.goal-tracker",
+      "kind": "widget",
+      "publicationStatus": "published",
+      "name": "Goal Tracker",
+      "description": "Track manual or Twitch-linked follower and subscriber goals with live automatic updates.",
+      "version": "1.0.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "🎯",
+      "minimumCdpVersion": "0.2.8",
+      "integritySha256": "079a770cbd313e60ce8ab28520a95941543b4b9244fcb3c8b8b8cf6b990271ef",
+      "allowMultiple": true,
+      "defaultWidth": 480,
+      "defaultHeight": 420,
+      "minWidth": 340,
+      "minHeight": 300,
+      "permissions": [
+        "twitch:audience-metrics"
+      ],
+      "tags": [
+        "Goals",
+        "Progress",
+        "Creator Utility",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.goal-tracker/1.0.0/index.html"
+    },
+    {
+      "id": "cdp.viewer-queue",
+      "kind": "widget",
+      "publicationStatus": "published",
+      "name": "Viewer Queue",
+      "description": "Manage community game queues with manual viewer entry, up/down ordering, call-next, and a recent-player history.",
+      "version": "1.0.1",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Community",
+      "icon": "🎮",
+      "minimumCdpVersion": "0.2.8",
+      "integritySha256": "9e06bc23419deecd246edc19b849b4fc5bb968dc61fdf3b5fe8ade35f03db16b",
+      "allowMultiple": true,
+      "defaultWidth": 540,
+      "defaultHeight": 440,
+      "minWidth": 380,
+      "minHeight": 360,
+      "permissions": [],
+      "tags": [
+        "Queue",
+        "Community Games",
+        "Viewer Management",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.viewer-queue/1.0.1/index.html",
+      "previousReleases": [
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.viewer-queue/1.0.0/index.html",
+          "integritySha256": "12dd77cb08b07ffc7a33c69d00ced2d39101e4bb6602be6a5542293f69b92a00",
+          "minimumCdpVersion": "0.2.8"
+        }
+      ]
+    },
+    {
+      "id": "cdp.giveaway-manager",
+      "kind": "widget",
+      "publicationStatus": "published",
+      "name": "Giveaway Manager",
+      "description": "Run free-entry giveaways with manual participant entry, duplicate prevention, secure randomized winner selection, and winner history.",
+      "version": "1.0.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Community",
+      "icon": "🎁",
+      "minimumCdpVersion": "0.2.8",
+      "integritySha256": "68d9d0646bd176376d52a68d8c86d8939e185ced4c8b8a70ce824c08e901dd59",
+      "allowMultiple": true,
+      "defaultWidth": 520,
+      "defaultHeight": 445,
+      "minWidth": 380,
+      "minHeight": 350,
+      "permissions": [],
+      "tags": [
+        "Giveaways",
+        "Community",
+        "Winner Picker",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.giveaway-manager/1.0.0/index.html"
+    },
+    {
+      "id": "cdp.discord-dock",
+      "kind": "integration",
+      "publicationStatus": "published",
+      "name": "Discord Dock",
+      "description": "Discord web dock managed through the CDP Marketplace. Requires CDP 0.2.9 or newer.",
+      "version": "0.2.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Community",
+      "icon": "💬",
+      "minimumCdpVersion": "0.2.9",
+      "integrationId": "discord",
+      "host": "browser-dock",
+      "launchUrl": "https://discord.com/app",
+      "provides": [
+        "Discord web app inside a native CDP browser dock",
+        "Servers, channels, friends, and direct messages",
+        "Persistent local Discord web session",
+        "Refresh, open-in-browser, and clear-session controls",
+        "Marketplace-delivered configuration and versioning"
+      ],
+      "requirements": [
+        "An existing Discord account",
+        "Internet access to Discord",
+        "Sign in to Discord inside the dock the first time you use it"
+      ],
+      "tags": [
+        "Community",
+        "Messaging",
+        "Integration",
+        "Browser Dock",
+        "Marketplace"
+      ]
+    },
+    {
+      "id": "cdp.mix-it-up",
+      "kind": "integration",
+      "publicationStatus": "published",
+      "name": "Mix It Up",
+      "description": "Bring Mix It Up commands, counters, viewers, currencies, inventory, leaderboards, chat actions, and selected dashboard data into CDP.",
+      "version": "0.2.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Automation",
+      "icon": "🎛️",
+      "minimumCdpVersion": "0.2.9",
+      "integrationId": "mixitup",
+      "host": "mix-it-up",
+      "provides": [
+        "Local Developer API connection status and automatic health checks",
+        "Searchable command list with direct run and Quick Action pinning",
+        "Counter values with increment, decrement, set, and reset controls",
+        "Viewer search, active viewers, watch time, roles, follow/subscription details, titles, and notes",
+        "Viewer currency balances with add, subtract, and set controls",
+        "Viewer inventory quantities with add, subtract, and set controls",
+        "Watch-time, currency, and inventory leaderboards",
+        "Send chat messages and confirmed clear-chat actions through Mix It Up",
+        "Configurable Dashboard widget for counters, watch-time leaders, and pinned Mix It Up commands",
+        "Recent CDP-to-Mix It Up activity and error history"
+      ],
+      "requirements": [
+        "Mix It Up installed and running",
+        "Developer API enabled from Mix It Up → Services → Developer API",
+        "Local access to Mix It Up on localhost:8911"
+      ],
+      "tags": [
+        "Automation",
+        "Commands",
+        "Counters",
+        "Viewers",
+        "Local",
+        "Marketplace"
+      ]
+    },
+    {
+      "id": "cdp.stream-deck",
+      "kind": "integration",
+      "publicationStatus": "published",
+      "name": "Elgato Stream Deck",
+      "description": "Use Stream Deck hardware to trigger CDP navigation, supported Quick Actions, Break Timer controls, and system media commands.",
+      "version": "0.1.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Hardware",
+      "icon": "🎚️",
+      "minimumCdpVersion": "0.2.9",
+      "integrationId": "streamdeck",
+      "host": "stream-deck",
+      "provides": [
+        "Open selected CDP pages from Stream Deck",
+        "Trigger supported CDP Quick Actions",
+        "Break Timer start, pause, resume, reset, and break-taken controls",
+        "System previous, play/pause, and next media controls",
+        "Dedicated Stream Deck integration page with connection status, setup guidance, and supported-action reference"
+      ],
+      "requirements": [
+        "Elgato Stream Deck hardware or Stream Deck Mobile",
+        "Stream Deck software 7.1 or newer for the development plugin",
+        "Creator Dashboard Pro running with the add-on enabled"
+      ],
+      "tags": [
+        "Hardware",
+        "Controls",
+        "Stream Deck",
+        "Marketplace"
+      ]
+    },
+    {
+      "id": "cdp.subathon-event-toolkit",
+      "kind": "widget",
+      "publicationStatus": "published",
+      "name": "Subathon & Event Toolkit",
+      "description": "Run a persistent subathon or community event timer with configurable caps, manual time rules, active-time milestones, adjustments, totals, and activity history.",
+      "version": "1.1.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Events",
+      "icon": "⏱️",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "b6a658f7750d9d667608b1ea55d9700b40699cbe6c6b235a0c25473ab316c782",
+      "allowMultiple": true,
+      "defaultWidth": 560,
+      "defaultHeight": 600,
+      "minWidth": 390,
+      "minHeight": 420,
+      "permissions": [],
+      "tags": [
+        "Subathon",
+        "Events",
+        "Timer",
+        "Community",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.subathon-event-toolkit/1.1.0/index.html",
+      "previousReleases": [
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.subathon-event-toolkit/1.0.0/index.html",
+          "integritySha256": "88ae05c6367d5aed6546aa1ac3f0c453a0485b339da40c1cb64b97998cc22df6",
+          "minimumCdpVersion": "0.2.9"
+        }
+      ]
+    },
+    {
+      "id": "cdp.counter-board",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Custom Counter Board",
+      "description": "Track stream wins, deaths and custom counters with configurable increments, session resets and lifetime addition totals. Optional OBS display with CDP 0.2.9 browser-source support.",
+      "version": "1.2.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "🔢",
+      "minimumCdpVersion": "0.2.8",
+      "integritySha256": "ce175af410c3e9085b4bcf68a8b76523844163028aa31c6d73cb9b5faabd6f23",
+      "allowMultiple": true,
+      "defaultWidth": 530,
+      "defaultHeight": 500,
+      "minWidth": 350,
+      "minHeight": 370,
+      "permissions": [],
+      "tags": [
+        "Counters",
+        "Session Stats",
+        "Gaming",
+        "Manual",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.counter-board/1.2.0/index.html",
+      "previousReleases": [
+        {
+          "version": "1.1.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.counter-board/1.1.0/index.html",
+          "integritySha256": "cc7a7eaf6b645c0d04b3db753b9c42a7dcc7ba56b46780bc80a0ed053232e34e",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.0.1",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.counter-board/1.0.1/index.html",
+          "integritySha256": "2dc4a79ebef42e16fc7b30ff22aa4d6b7fa0e7f7d681f4371790021a077fbcf9",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.counter-board/1.0.0/index.html",
+          "integritySha256": "4662de16acb387da1eebeb6a4c694a5c0dd0a1a60c89f98ae644d5f7e3ae31b5",
+          "minimumCdpVersion": "0.2.8"
+        }
+      ]
+    },
+    {
+      "id": "cdp.challenge-wheel",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Challenge & Punishment Wheel",
+      "description": "Spin a customizable challenge wheel with weighted odds, excluded entries, animated selection and recent results. Optional OBS display with CDP 0.2.9 browser-source support.",
+      "version": "1.3.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Community",
+      "icon": "🎡",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "82c5d892512b5ef7fa236ae5f7fb54ba8ef168f72ee3fe5292b08b92fc411702",
+      "allowMultiple": true,
+      "defaultWidth": 575,
+      "defaultHeight": 620,
+      "minWidth": 370,
+      "minHeight": 435,
+      "permissions": [
+        "twitch:triggers"
+      ],
+      "tags": [
+        "Challenge",
+        "Wheel",
+        "Randomizer",
+        "Community",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.challenge-wheel/1.3.0/index.html",
+      "previousReleases": [
+        {
+          "version": "1.2.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.challenge-wheel/1.2.0/index.html",
+          "integritySha256": "cf473868aeac0a7f8fe7b32a505573908a83315f69d04a2dfd32227f9a5637a1",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.1.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.challenge-wheel/1.1.0/index.html",
+          "integritySha256": "608b42c55b7c011fc1207c7f42ba6f28130c31f745d508f5ce664b71df7d81f0",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.0.1",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.challenge-wheel/1.0.1/index.html",
+          "integritySha256": "b7297cda9e03c97580a78a7ab43d1eafef738d1216e45e38ae6d5b32504a24ea",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.challenge-wheel/1.0.0/index.html",
+          "integritySha256": "df217a07d158c8e1c5ab6b0fe43e2b0fdd8ddd1dc81a654a94e9db04d9ca39c2",
+          "minimumCdpVersion": "0.2.8"
+        }
+      ]
+    },
+    {
+      "id": "cdp.run-of-show",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Run of Show Planner",
+      "description": "Build a stream rundown with rearrangeable segments, timing estimates, talking points, a live segment timer and a completion checklist.",
+      "version": "1.0.1",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "📋",
+      "minimumCdpVersion": "0.2.8",
+      "integritySha256": "2c961a5de54b11be5ff8192459ec8bb4f217040d973eb1591d2c6a6e229f91fd",
+      "allowMultiple": true,
+      "defaultWidth": 570,
+      "defaultHeight": 620,
+      "minWidth": 370,
+      "minHeight": 420,
+      "permissions": [],
+      "tags": [
+        "Planning",
+        "Segments",
+        "Stream Timer",
+        "Checklist",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.run-of-show/1.0.1/index.html",
+      "previousReleases": [
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.run-of-show/1.0.0/index.html",
+          "integritySha256": "c47ca282dca9f71a259f1d16bf5a6d7c516f95308c5224ff7a734249756fb963",
+          "minimumCdpVersion": "0.2.8"
+        }
+      ]
+    },
+    {
+      "id": "cdp.game-progress",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Game Progress Tracker",
+      "description": "Track games and achievements with editable objectives, progress bars, and starter templates including Pokémon Nuzlocke. Optional OBS display with CDP 0.2.9 browser-source support.",
+      "version": "1.2.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Gaming",
+      "icon": "🏆",
+      "minimumCdpVersion": "0.2.8",
+      "integritySha256": "762c0fee8f5f9dd4d731762020c46117baf2595234c8e5c7db87c75d04b0f5b8",
+      "allowMultiple": true,
+      "defaultWidth": 570,
+      "defaultHeight": 620,
+      "minWidth": 365,
+      "minHeight": 420,
+      "permissions": [],
+      "tags": [
+        "Progress",
+        "Campaigns",
+        "Nuzlocke",
+        "Objectives",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.game-progress/1.2.0/index.html",
+      "previousReleases": [
+        {
+          "version": "1.1.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.game-progress/1.1.0/index.html",
+          "integritySha256": "459de17e70de45bf8e131daafa9b43262f82a6e3c739ec7c4984e47ef2f0a58e",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.0.1",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.game-progress/1.0.1/index.html",
+          "integritySha256": "7ecfee105d40fba12c2b873fe79961eb31075160f12e04dbc4e2a098385ca729",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.game-progress/1.0.0/index.html",
+          "integritySha256": "8d0dcbf57e734d49c5ebb09285df7a61212149cc7bf91354f1d1346ee751671a",
+          "minimumCdpVersion": "0.2.8"
+        }
+      ]
+    },
+    {
+      "id": "cdp.highlight-notebook",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Highlight & Clip Notebook",
+      "description": "Capture stream timestamps, memorable moments and editing notes, then move clips through a manual production workflow.",
+      "version": "1.0.1",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "🎬",
+      "minimumCdpVersion": "0.2.8",
+      "integritySha256": "33fd62596ab314f1490f790971283de39d21472e93f94cc2ea3573802534dc91",
+      "allowMultiple": true,
+      "defaultWidth": 590,
+      "defaultHeight": 620,
+      "minWidth": 370,
+      "minHeight": 430,
+      "permissions": [],
+      "tags": [
+        "Clips",
+        "Highlights",
+        "Notes",
+        "Content Pipeline",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.highlight-notebook/1.0.1/index.html",
+      "previousReleases": [
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.highlight-notebook/1.0.0/index.html",
+          "integritySha256": "acba7419853f4672a8e301e76dc3713d7fc0c510d18be9779b7e6180b0a007e0",
+          "minimumCdpVersion": "0.2.8"
+        }
+      ]
+    },
+    {
+      "id": "cdp.command-reference",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Chat Command Reference",
+      "description": "View live read-only commands from connected Firebot and Mix It Up, plus Streamer.bot actions; retain manual reference entries. Requires CDP 0.2.9 for live sync.",
+      "version": "1.0.2",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "⌨️",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "6f246a29f223fda8f4ee95941519f866572c2ee39fa61af7f2065a6b21232999",
+      "allowMultiple": true,
+      "defaultWidth": 580,
+      "defaultHeight": 650,
+      "minWidth": 370,
+      "minHeight": 430,
+      "permissions": [
+        "bot:commands:read"
+      ],
+      "tags": [
+        "Commands",
+        "Firebot",
+        "Mix It Up",
+        "Streamer.bot",
+        "Reference"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.command-reference/1.0.2/index.html",
+      "previousReleases": [
+        {
+          "version": "1.0.1",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.command-reference/1.0.1/index.html",
+          "integritySha256": "8646dd6a68cffdbeab4f7da81cba6e22ce42446eff0d5801facd5c2bc711ffaf",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.command-reference/1.0.0/index.html",
+          "integritySha256": "e21e53e861f2fb01a7176a8d495823c3c97c96a23958100f16126023abfa5547",
+          "minimumCdpVersion": "0.2.8"
+        }
+      ]
+    },
+    {
+      "id": "cdp.collab-organizer",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Collaboration Organizer",
+      "description": "Plan collaborations and add them manually or automatically upon confirmation to CDP Stream Schedule. Requires CDP 0.2.9 for schedule integration.",
+      "version": "1.0.2",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "🤝",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "1a268f5fbc8053ffefadb2c9c4585702d3b92329b97d3278bdf889cdf241f83d",
+      "allowMultiple": true,
+      "defaultWidth": 580,
+      "defaultHeight": 640,
+      "minWidth": 370,
+      "minHeight": 430,
+      "permissions": [
+        "schedule:collaboration:add"
+      ],
+      "tags": [
+        "Collabs",
+        "Planning",
+        "Contacts",
+        "Schedule",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.collab-organizer/1.0.2/index.html",
+      "previousReleases": [
+        {
+          "version": "1.0.1",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.collab-organizer/1.0.1/index.html",
+          "integritySha256": "5c64c5163b30d892e806360b9717add2010efb53e5aee24f400e005f198b16a0",
+          "minimumCdpVersion": "0.2.8"
+        },
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.collab-organizer/1.0.0/index.html",
+          "integritySha256": "062c416130ce38d3693eb2bcb5bdb9f49278c8875edf0bb2b82bb8509c6da32d",
+          "minimumCdpVersion": "0.2.8"
+        }
+      ]
+    },
+    {
+      "id": "cdp.twitch-predictions",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Twitch Predictions",
+      "description": "Manage real Twitch Channel Points predictions with host-confirmed changes and an OBS totals display. Requires an eligible Twitch channel.",
+      "version": "1.0.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "🔮",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "17d573e3658d70849d65f775edac8a1f3ab4f922de80891d54ec6de3282cef70",
+      "allowMultiple": false,
+      "defaultWidth": 530,
+      "defaultHeight": 620,
+      "minWidth": 350,
+      "minHeight": 400,
+      "permissions": [
+        "twitch:predictions"
+      ],
+      "tags": [
+        "Twitch",
+        "OBS",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.twitch-predictions/1.0.0/index.html",
+      "previousReleases": []
+    },
+    {
+      "id": "cdp.random-loadout",
+      "kind": "widget",
+      "publicationStatus": "testing",
+      "name": "Random Loadout Generator",
+      "description": "Roll custom weapons, restrictions and bonus challenges, with optional Twitch chat/reward triggers and an OBS display.",
+      "version": "1.0.0",
+      "publisher": "Creator Dashboard Pro",
+      "category": "Creator Utilities",
+      "icon": "🎲",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "2321c0257b72aa63795ae23d6eac68820ae02494066a8c3ce55f1613ca2cee90",
+      "allowMultiple": false,
+      "defaultWidth": 530,
+      "defaultHeight": 620,
+      "minWidth": 350,
+      "minHeight": 400,
+      "permissions": [
+        "twitch:triggers"
+      ],
+      "tags": [
+        "Twitch",
+        "OBS",
+        "Marketplace"
+      ],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.random-loadout/1.0.0/index.html",
+      "previousReleases": []
+    }
+  ]
+}

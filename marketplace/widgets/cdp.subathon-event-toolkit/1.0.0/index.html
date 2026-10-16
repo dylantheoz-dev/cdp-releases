@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Subathon & Event Toolkit</title>
+<style>
+:root{--accent:#8b5cf6;--text-primary:#f8fafc;--text-secondary:#94a3b8;--surface:#111827;--border:#334155;color-scheme:dark;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;background:transparent;color:var(--text-primary);font:13px/1.4 Inter,system-ui,sans-serif}button,input{font:inherit}
+.shell{display:grid;gap:12px}.top,.row,.statRow,.ruleRow,.actionRow{display:flex;align-items:center;gap:8px;justify-content:space-between}
+h2,h3,p{margin:0}h2{font-size:1rem}h3{font-size:.78rem}small,.muted{color:var(--text-secondary);font-size:.7rem}
+.badge{padding:4px 8px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--border));border-radius:999px;color:var(--accent);font-weight:800;font-size:.69rem}
+.timer{padding:14px;border:1px solid color-mix(in srgb,var(--accent) 55%,var(--border));border-radius:14px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));text-align:center}
+.time{font-variant-numeric:tabular-nums;font-size:2.15rem;font-weight:900;letter-spacing:.03em;margin:4px 0}.status{color:var(--text-secondary);font-size:.72rem}
+.actionRow{justify-content:center;flex-wrap:wrap;margin-top:10px}
+button{cursor:pointer;border:1px solid var(--border);border-radius:9px;background:color-mix(in srgb,var(--surface) 82%,#000 18%);color:var(--text-primary);padding:7px 10px;font-weight:750}
+button:hover:not(:disabled){border-color:var(--accent)}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--accent);border-color:var(--accent);color:#fff}.danger{color:#fca5a5}
+.panel{padding:12px;border:1px solid var(--border);border-radius:12px;background:color-mix(in srgb,var(--surface) 86%,#000 14%)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.field{display:grid;gap:5px}.field label{font-size:.69rem;color:var(--text-secondary)}
+input{width:100%;min-width:0;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text-primary);padding:7px}
+.ruleRow{padding:7px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 65%,transparent)}.ruleRow:last-child{border-bottom:0}.ruleName{font-weight:700}.ruleControls{display:flex;align-items:center;gap:5px}.ruleControls input{width:70px;text-align:right}.ruleControls span{font-size:.67rem;color:var(--text-secondary)}
+.triggerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}.triggerGrid button{font-size:.72rem}
+.statRow{align-items:stretch}.stat{flex:1;padding:8px;border:1px solid var(--border);border-radius:9px;text-align:center}.stat strong{display:block;font-size:.9rem}.stat span{font-size:.65rem;color:var(--text-secondary)}
+.log{display:grid;gap:5px;max-height:150px;overflow:auto}.logItem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:6px 8px;border:1px solid var(--border);border-radius:8px}.logItem strong{overflow-wrap:anywhere}.logItem span{font-size:.68rem;color:var(--text-secondary)}
+.notice{min-height:1em;color:var(--text-secondary);font-size:.7rem;margin-top:6px}.notice.error{color:#fca5a5}
+@media(max-width:460px){.grid,.triggerGrid{grid-template-columns:1fr}.statRow{flex-direction:column}.ruleRow{align-items:flex-start}.ruleControls{width:100%}.ruleControls input{flex:1}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top"><div><h2>⏱️ Subathon & Event Toolkit</h2><small>Persistent event timer and manual event rules</small></div><span id="runBadge" class="badge">Ready</span></div>
+  <section class="timer">
+    <div id="time" class="time">02:00:00</div>
+    <div id="status" class="status">Set your starting time, then begin.</div>
+    <div class="actionRow">
+      <button id="start" class="primary">▶ Start</button>
+      <button id="pause">⏸ Pause</button>
+      <button id="resume">▶ Resume</button>
+      <button id="reset" class="danger">Reset</button>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="row" style="margin-bottom:9px"><h3>Event Setup</h3><small>Timer survives CDP restarts</small></div>
+    <div class="grid">
+      <div class="field"><label for="hours">Starting hours</label><input id="hours" type="number" min="0" max="999" step="1" value="2"></div>
+      <div class="field"><label for="minutes">Starting minutes</label><input id="minutes" type="number" min="0" max="59" step="1" value="0"></div>
+    </div>
+    <div class="actionRow" style="justify-content:flex-start">
+      <input id="customMinutes" type="number" min="-1440" max="1440" step="1" placeholder="Custom minutes" style="max-width:150px">
+      <button id="customAdd">Apply Time</button>
+    </div>
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  </section>
+  <section class="panel">
+    <div class="row"><h3>Time Rules</h3><small>Minutes added per manual event</small></div>
+    <div id="rules"></div>
+    <div id="triggers" class="triggerGrid"></div>
+  </section>
+  <section class="panel">
+    <div class="statRow">
+      <div class="stat"><strong id="totalAdded">0m</strong><span>Total added</span></div>
+      <div class="stat"><strong id="eventCount">0</strong><span>Events applied</span></div>
+      <div class="stat"><strong id="elapsed">0m</strong><span>Event elapsed</span></div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="row" style="margin-bottom:8px"><h3>Recent Event Activity</h3><button id="clearLog">Clear Log</button></div>
+    <div id="log" class="log"><small>No event activity yet.</small></div>
+  </section>
+  <small>Version 1.0 uses manual triggers only. It does not access Twitch tokens, donations, payment accounts, or other integrations.</small>
+</div>
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const STORE_REQUEST="subathon-event-toolkit-v1";
+const MAX_SECONDS=999*3600+59*60;
+const RULES=[
+ {id:"sub",label:"Subscription",minutes:5,icon:"⭐"},
+ {id:"gift",label:"Gifted Sub",minutes:5,icon:"🎁"},
+ {id:"bits",label:"100 Bits",minutes:1,icon:"💎"},
+ {id:"tip",label:"$1 Tip",minutes:1,icon:"💵"}
+];
+const state={mode:"ready",endAt:0,remainingSeconds:7200,startedAt:0,rules:RULES.map(r=>({...r})),totalAddedSeconds:0,eventCount:0,log:[]};
+let ready=false;
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+const number=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+const format=s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return [h,m,sec].map(v=>String(v).padStart(2,"0")).join(":");};
+const short=s=>{const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h?(h+"h "+m+"m"):(m+"m");};
+function currentRemaining(){if(state.mode==="running")return clamp(Math.ceil((state.endAt-Date.now())/1000),0,MAX_SECONDS);return clamp(state.remainingSeconds,0,MAX_SECONDS);}
+function save(){if(!ready)return;state.remainingSeconds=currentRemaining();parent.postMessage({type:"cdp:storage:set",value:state},"*");}
+function setNotice(text,bad=false){$("notice").textContent=text;$("notice").classList.toggle("error",bad);}
+function updateTimer(){const remaining=currentRemaining();if(state.mode==="running"&&remaining<=0){state.mode="finished";state.remainingSeconds=0;state.endAt=0;save();}
+ $("time").textContent=format(remaining);$("runBadge").textContent=state.mode==="running"?"Running":state.mode==="paused"?"Paused":state.mode==="finished"?"Finished":"Ready";
+ $("status").textContent=state.mode==="running"?"Timer is counting down in real time.":state.mode==="paused"?"Timer paused. Added events still increase remaining time.":state.mode==="finished"?"Time is up. Add time or reset to continue.":"Set your starting time, then begin.";
+ $("start").disabled=state.mode==="running"||state.mode==="paused";$("pause").disabled=state.mode!=="running";$("resume").disabled=state.mode!=="paused"&&state.mode!=="finished";
+ $("hours").disabled=state.mode==="running"||state.mode==="paused";$("minutes").disabled=state.mode==="running"||state.mode==="paused";
+ $("totalAdded").textContent=short(state.totalAddedSeconds);$("eventCount").textContent=String(state.eventCount);const elapsed=state.startedAt?Math.max(0,Math.floor((Date.now()-state.startedAt)/1000)):0;$("elapsed").textContent=short(elapsed);}
+function renderRules(){const root=$("rules"),triggers=$("triggers");root.replaceChildren();triggers.replaceChildren();state.rules.forEach(rule=>{const row=document.createElement("div");row.className="ruleRow";const name=document.createElement("div");name.className="ruleName";name.textContent=rule.icon+" "+rule.label;const controls=document.createElement("div");controls.className="ruleControls";const input=document.createElement("input");input.type="number";input.min="0";input.max="1440";input.step="1";input.value=String(rule.minutes);input.setAttribute("aria-label",rule.label+" minutes");input.addEventListener("change",()=>{rule.minutes=clamp(Math.round(number(input.value,0)),0,1440);input.value=String(rule.minutes);save();renderRules();});const unit=document.createElement("span");unit.textContent="min";controls.append(input,unit);row.append(name,controls);root.appendChild(row);const button=document.createElement("button");button.type="button";button.textContent=rule.icon+" + "+rule.label+" (+"+rule.minutes+"m)";button.addEventListener("click",()=>applySeconds(rule.minutes*60,rule.label));triggers.appendChild(button);});}
+function renderLog(){const root=$("log");root.replaceChildren();if(!state.log.length){const empty=document.createElement("small");empty.textContent="No event activity yet.";root.appendChild(empty);return}state.log.slice(0,20).forEach(item=>{const row=document.createElement("div");row.className="logItem";const left=document.createElement("strong");left.textContent=item.label;const right=document.createElement("span");right.textContent=(item.seconds>=0?"+":"")+short(Math.abs(item.seconds))+" · "+new Date(item.at).toLocaleTimeString();row.append(left,right);root.appendChild(row);});}
+function applySeconds(seconds,label){seconds=Math.round(number(seconds,0));if(!seconds)return;const before=currentRemaining(),after=clamp(before+seconds,0,MAX_SECONDS),applied=after-before;if(!applied){setNotice("That change would exceed the timer limit.",true);return}state.remainingSeconds=after;if(state.mode==="running")state.endAt=Date.now()+after*1000;if(state.mode==="finished"&&after>0)state.mode="paused";state.totalAddedSeconds=Math.max(0,state.totalAddedSeconds+Math.max(0,applied));state.eventCount++;state.log.unshift({label:label,seconds:applied,at:Date.now()});state.log=state.log.slice(0,50);save();renderLog();updateTimer();setNotice(label+": "+(applied>0?"+":"")+short(Math.abs(applied))+".");}
+function start(){const base=clamp(Math.round(number($("hours").value,0))*3600+Math.round(number($("minutes").value,0))*60,0,MAX_SECONDS);if(!base){setNotice("Enter a starting time greater than zero.",true);return}state.remainingSeconds=base;state.endAt=Date.now()+base*1000;state.startedAt=Date.now();state.mode="running";state.totalAddedSeconds=0;state.eventCount=0;state.log=[];save();renderLog();updateTimer();setNotice("Event timer started.");}
+function pause(){if(state.mode!=="running")return;state.remainingSeconds=currentRemaining();state.endAt=0;state.mode="paused";save();updateTimer();setNotice("Timer paused.");}
+function resume(){if(!["paused","finished"].includes(state.mode)||currentRemaining()<=0){setNotice("Add time before resuming.",true);return}state.endAt=Date.now()+currentRemaining()*1000;if(!state.startedAt)state.startedAt=Date.now();state.mode="running";save();updateTimer();setNotice("Timer resumed.");}
+let resetArmedUntil=0;function reset(){if(state.startedAt||state.log.length){const now=Date.now();if(now>resetArmedUntil){resetArmedUntil=now+4000;$("reset").textContent="Confirm Reset";setNotice("Click Confirm Reset within 4 seconds to clear the event timer and activity.");setTimeout(()=>{if(Date.now()>resetArmedUntil)$("reset").textContent="Reset";},4100);return}resetArmedUntil=0;$("reset").textContent="Reset";}const base=clamp(Math.round(number($("hours").value,2))*3600+Math.round(number($("minutes").value,0))*60,0,MAX_SECONDS);state.mode="ready";state.endAt=0;state.remainingSeconds=base||7200;state.startedAt=0;state.totalAddedSeconds=0;state.eventCount=0;state.log=[];save();renderLog();updateTimer();setNotice("Event reset.");}
+$("start").addEventListener("click",start);$("pause").addEventListener("click",pause);$("resume").addEventListener("click",resume);$("reset").addEventListener("click",reset);
+$("customAdd").addEventListener("click",()=>{const m=clamp(Math.round(number($("customMinutes").value,0)),-1440,1440);if(!m){setNotice("Enter a non-zero number of minutes.",true);return}applySeconds(m*60,"Manual adjustment");$("customMinutes").value="";});
+let clearLogArmedUntil=0;$("clearLog").addEventListener("click",()=>{if(!state.log.length)return;const now=Date.now();if(now>clearLogArmedUntil){clearLogArmedUntil=now+4000;$("clearLog").textContent="Confirm Clear";setNotice("Click Confirm Clear within 4 seconds to clear activity history.");setTimeout(()=>{if(Date.now()>clearLogArmedUntil)$("clearLog").textContent="Clear Log";},4100);return}clearLogArmedUntil=0;$("clearLog").textContent="Clear Log";state.log=[];save();renderLog();setNotice("Activity history cleared.");});
+window.addEventListener("message",e=>{if(e.source!==parent||!e.data||typeof e.data!=="object")return;if(e.data.type==="cdp:init"){const t=e.data.theme;if(t&&typeof t==="object")for(const key of ["accent","textPrimary","textSecondary","surface","border"]){if(typeof t[key]==="string"&&t[key].trim())document.documentElement.style.setProperty("--"+key.replace(/[A-Z]/g,c=>"-"+c.toLowerCase()),t[key]);}parent.postMessage({type:"cdp:storage:get",requestId:STORE_REQUEST},"*");}
+ if(e.data.type==="cdp:storage:value"&&e.data.requestId===STORE_REQUEST){const v=e.data.value;if(v&&typeof v==="object"){if(["ready","running","paused","finished"].includes(v.mode))state.mode=v.mode;state.endAt=Math.max(0,number(v.endAt,0));state.remainingSeconds=clamp(number(v.remainingSeconds,7200),0,MAX_SECONDS);state.startedAt=Math.max(0,number(v.startedAt,0));state.totalAddedSeconds=Math.max(0,number(v.totalAddedSeconds,0));state.eventCount=Math.max(0,Math.round(number(v.eventCount,0)));if(Array.isArray(v.rules))state.rules=RULES.map(def=>{const old=v.rules.find(x=>x&&x.id===def.id);return {...def,minutes:clamp(Math.round(number(old&&old.minutes,def.minutes)),0,1440)};});if(Array.isArray(v.log))state.log=v.log.slice(0,50).flatMap(x=>x&&typeof x.label==="string"&&Number.isFinite(Number(x.seconds))&&Number.isFinite(Number(x.at))?[{label:x.label.slice(0,60),seconds:Number(x.seconds),at:Number(x.at)}]:[]);}ready=true;renderRules();renderLog();updateTimer();save();}});
+renderRules();renderLog();updateTimer();setInterval(updateTimer,1000);
+})();
+</script>
+</body>
+</html>

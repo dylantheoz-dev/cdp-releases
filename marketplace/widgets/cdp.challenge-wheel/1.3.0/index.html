@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Challenge &amp; Punishment Wheel</title>
+<style>
+:root{--accent:#8b5cf6;--accent-strong:#7c3aed;--accent-soft:rgba(139,92,246,.18);--accent-text:#c4b5fd;--surface:#111827;--surface-hover:#263348;--text-primary:#f8fafc;--text-secondary:#94a3b8;--border:#334155;--danger-text:#fca5a5;font-family:Segoe UI,system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;min-width:0;color:var(--text-primary);background:transparent}body{font-size:13px}main{display:grid;gap:12px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;color:var(--accent-text)}h2{margin:2px 0 0;font-size:18px;line-height:1.2;letter-spacing:-.025em}.sub{margin:3px 0 0;color:var(--text-secondary);font-size:11px}.badge{font-size:10px;font-weight:800;color:var(--accent-text);border:1px solid var(--border);border-radius:99px;padding:6px 9px;white-space:nowrap}
+.stage{display:grid;grid-template-columns:minmax(160px,1fr) minmax(140px,.8fr);gap:14px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
+.wheelOuter{position:relative;width:min(100%,290px);aspect-ratio:1;margin:auto;filter:drop-shadow(0 8px 18px rgba(0,0,0,.16))}.wheelOuter:after{content:"";position:absolute;inset:11%;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-radius:50%;pointer-events:none}
+.wheel{position:absolute;inset:7px;border:6px solid var(--surface-hover);border-radius:50%;background:var(--surface-hover);transition:transform 4.2s cubic-bezier(.1,.82,.08,1);box-shadow:0 0 0 1px var(--border)}.hub{position:absolute;z-index:3;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-50%);border-radius:50%;border:5px solid var(--surface-hover);background:var(--accent);box-shadow:0 1px 10px rgba(0,0,0,.35)}
+.pointer{position:absolute;z-index:4;top:-3px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:23px solid var(--text-primary);filter:drop-shadow(0 2px 4px rgba(0,0,0,.45))}
+.result{display:grid;gap:9px;min-width:0}.result .hint{color:var(--text-secondary);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}.selected{font-size:clamp(17px,3vw,26px);font-weight:900;line-height:1.16;letter-spacing:-.03em;overflow-wrap:anywhere}.result p{font-size:11px;color:var(--text-secondary);margin:0;line-height:1.5}.result button{width:100%}.sheet{display:grid;gap:10px;padding:12px;border:1px solid var(--border);border-radius:13px;background:var(--surface)}
+.sectionHead{display:flex;align-items:center;justify-content:space-between;gap:8px}.sectionHead strong{font-size:13px}.sectionHead small{color:var(--text-secondary);font-size:10px}
+.list{display:grid;gap:6px;max-height:250px;overflow-y:auto}.entry{display:grid;grid-template-columns:auto minmax(0,1fr) 65px auto;gap:6px;align-items:center;padding:6px;border:1px solid var(--border);border-radius:9px;background:var(--surface-hover)}.entry.off{opacity:.5}.entry input[type=text]{width:100%}.entry input[type=number]{width:100%;text-align:center}.entry input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent)}
+.add{display:grid;grid-template-columns:minmax(0,1fr) 66px auto;gap:7px}.history{display:grid;gap:6px}.historyRow{display:flex;gap:9px;justify-content:space-between;padding:7px 9px;border-radius:8px;border:1px solid var(--border);font-size:11px}.historyRow span{min-width:0;overflow-wrap:anywhere}.historyRow small{white-space:nowrap;color:var(--text-secondary)}
+button,input{font:inherit;min-width:0;border:1px solid var(--border);border-radius:8px;background:var(--surface-hover);color:var(--text-primary);padding:8px;max-width:100%}button{cursor:pointer}button:hover:not(:disabled){border-color:var(--accent)}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button:disabled{opacity:.5;cursor:default}.primary{background:linear-gradient(130deg,var(--accent-strong),var(--accent));border-color:var(--accent);color:white;font-weight:900}.danger{color:var(--danger-text)}.muted{font-size:11px;color:var(--text-secondary)}.note{padding:8px;border-left:2px solid var(--accent);color:var(--text-secondary);font-size:10px;line-height:1.4}
+@media(max-width:500px){.stage{grid-template-columns:1fr}.wheelOuter{max-width:240px}.result{text-align:center}.entry{grid-template-columns:auto minmax(0,1fr) 53px auto}.entry button{padding:7px 5px}}@media(prefers-reduced-motion:reduce){.wheel{transition:none}}
+#storageNotice{margin:0;padding:9px 11px;border:1px solid var(--border);border-radius:8px;color:var(--danger-text);background:var(--surface);font-size:12px}
+</style></head><body><main>
+<p id="storageNotice" role="status" aria-live="polite" hidden></p>
+<header class="top"><div><span class="eyebrow">Community games</span><h2>Challenge Wheel</h2><p class="sub">Spin for a challenge, penalty or surprise</p></div><span id="activeBadge" class="badge">0 entries</span></header>
+<section class="stage"><div class="wheelOuter"><div class="pointer" aria-hidden="true"></div><div class="wheel" id="wheel"></div><div class="hub" aria-hidden="true"></div></div><div class="result" aria-live="polite"><span class="hint">Your result</span><div class="selected" id="result">Ready for a spin?</div><p id="detail">Create entries, adjust their odds and let the wheel decide.</p><button class="primary" id="spin" type="button">↻ Spin the wheel</button><small class="muted" id="odds">Weighted entries affect the odds.</small></div></section>
+<section class="sheet"><div class="sectionHead"><strong>Wheel entries</strong><small>Enabled · Weight 1–10</small></div><div class="list" id="entries"></div><form class="add" id="addForm"><input id="newLabel" maxlength="68" placeholder="Add a new challenge" required aria-label="New challenge"><input id="newWeight" type="number" min="1" max="10" value="1" aria-label="New challenge weight"><button class="primary" type="submit">Add</button></form><div class="note">Weight 2 is twice as likely as weight 1. Untick an entry to exclude it without deleting it.</div></section>
+<section class="sheet"><div class="sectionHead"><strong>Recent results</strong><button id="clearHistory" type="button">Clear history</button></div><div id="history" class="history"></div></section>
+</main><script>
+(()=>{
+"use strict";
+
+// Keep rejected changes out of the host's 256 KiB per-instance storage budget.
+// The storage protocol has no acknowledgement; this guards size, not disk failures.
+function createSaveGuard(readState,restoreState){
+ let snapshot;
+ const notice=message=>{const el=document.getElementById("storageNotice");el.textContent=message;el.hidden=!message;return false};
+ return{
+  remember(){snapshot=JSON.stringify(readState())},
+  warn:notice,
+  save(){
+   const value=readState(),serialized=JSON.stringify(value);
+   if(new TextEncoder().encode(serialized).byteLength>256*1024){
+    if(snapshot!==undefined)restoreState(JSON.parse(snapshot));
+    return notice("This change exceeds the widget's storage limit. Shorten notes or remove older items and try again.");
+   }
+   parent.postMessage({type:"cdp:storage:set",value},"*");
+   snapshot=serialized;notice("");return true;
+  }
+ };
+}
+function applyTheme(theme){
+ for(const[k,v]of Object.entries(theme||{}))if(typeof v==="string"&&v.trim()){
+  document.documentElement.style.setProperty("--"+k.replace(/[A-Z]/g,c=>"-"+c.toLowerCase()),v);
+  if(k==="colorScheme"&&(v==="light"||v==="dark"))document.documentElement.style.colorScheme=v;
+ }
+}
+
+const $=id=>document.getElementById(id);
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const seeds=["No healing for 5 minutes","Use a different weapon","Speak in rhyme","Take the long route","One-hand challenge"];
+const make=(label)=>({id:uid(),label,weight:1,enabled:true});
+let entries=seeds.map(make),history=[],selection="",hydrated=false,spinning=false,rotation=0,pendingHistoryClear=false,pendingSpin=null;
+const normalize=o=>({id:typeof o?.id==="string"?o.id.slice(0,80):uid(),label:typeof o?.label==="string"&&o.label.trim()?o.label.slice(0,68):"Challenge",weight:Math.min(10,Math.max(1,Math.floor(Number(o?.weight)||1))),enabled:o?.enabled!==false});
+const persistence=createSaveGuard(()=>({entries,history,selection,rotation,pendingSpin}),v=>{entries=v.entries;history=v.history;selection=v.selection;rotation=v.rotation;pendingSpin=v.pendingSpin;spinning=Boolean(pendingSpin)});
+const save=()=>persistence.save();
+function request(){parent.postMessage({type:"cdp:storage:get",requestId:"wheel-load"},"*")}
+function randomInt(limit){
+ const bytes=new Uint32Array(1),ceiling=4294967296-(4294967296%limit);
+ do{crypto.getRandomValues(bytes)}while(bytes[0]>=ceiling);
+ return bytes[0]%limit;
+}
+function active(){return entries.filter(e=>e.enabled)}
+function wedges(){
+ const list=active(),total=list.reduce((s,e)=>s+e.weight,0);
+ if(!total)return{sectors:[],total:0};
+ let offset=0;return{total,sectors:list.map((e,i)=>{const start=offset;offset+=e.weight/total*360;return{entry:e,start,end:offset,color:"color-mix(in srgb,var(--accent) "+[80,65,50,35,90][i%5]+"%,var(--surface-hover))"}})}
+}
+function draw(){
+ const w=wedges(),wheel=$("wheel");
+ const gradient=w.sectors.length?w.sectors.map(s=>s.color+" "+s.start+"deg "+s.end+"deg").join(","):"var(--surface-hover) 0deg 360deg";
+ wheel.style.background="conic-gradient("+gradient+")";wheel.style.transform="rotate("+rotation+"deg)";
+ $("activeBadge").textContent=active().length+" enabled";
+ $("spin").disabled=!hydrated||spinning||!w.sectors.length;
+ $("spin").textContent=spinning?"Spinning…":"↻ Spin the wheel";
+ $("result").textContent=selection||"Ready for a spin?";
+ $("detail").textContent=spinning?"The wheel is deciding…":(selection?"Saved to recent results. Spin again any time.":"Create entries, adjust their odds and let the wheel decide.");
+ $("odds").textContent=w.total?"Total weight: "+w.total+" · "+w.sectors.length+" eligible":"Enable at least one entry to spin.";
+}
+function render(){
+ $("entries").innerHTML=entries.map(e=>'<div class="entry '+(e.enabled?"":"off")+'"><input type="checkbox" aria-label="Include '+esc(e.label)+'" data-toggle="'+esc(e.id)+'" '+(e.enabled?"checked":"")+'><input type="text" aria-label="Edit challenge" maxlength="68" value="'+esc(e.label)+'" data-label="'+esc(e.id)+'"><input type="number" aria-label="Entry weight" title="Weight" min="1" max="10" value="'+e.weight+'" data-weight="'+esc(e.id)+'"><button data-remove="'+esc(e.id)+'" aria-label="Delete challenge" class="danger">✕</button></div>').join("")||'<div class="muted">No entries yet. Add a challenge below.</div>';
+ $("history").innerHTML=history.length?history.map((h,i)=>'<div class="historyRow"><span><b>'+ (i+1)+'.</b> '+esc(h.label)+'</span><small>'+esc(h.time)+'</small></div>').join(""):'<div class="muted">No spins yet.</div>';
+ $("clearHistory").textContent=pendingHistoryClear?"Confirm clear":"Clear history";$("clearHistory").className=pendingHistoryClear?"danger":"";
+ draw()
+}
+$("entries").addEventListener("change",e=>{
+ if(!hydrated||spinning)return;
+ const el=e.target;const id=el.dataset.toggle||el.dataset.label||el.dataset.weight;
+ const item=entries.find(v=>v.id===id);if(!item)return;
+ if(el.dataset.toggle){item.enabled=el.checked}
+ else if(el.dataset.label){item.label=el.value.trim().slice(0,68)||"Challenge"}
+ else {item.weight=Math.min(10,Math.max(1,Math.floor(Number(el.value)||1)))}
+ save();render()
+});
+$("entries").addEventListener("click",e=>{
+ if(!hydrated||spinning)return;
+ const b=e.target.closest("[data-remove]");if(!b)return;entries=entries.filter(v=>v.id!==b.dataset.remove);save();render()
+});
+$("addForm").addEventListener("submit",e=>{
+ e.preventDefault();if(!hydrated||spinning)return;const label=$("newLabel").value.trim();if(!label)return;if(entries.length>=100)return persistence.warn("The wheel supports up to 100 entries. Remove an entry before adding another.");entries.push(normalize({label,weight:$("newWeight").value}));if(save()){$("newLabel").value="";$("newWeight").value="1"}render()
+});
+function settleSpin(){
+ if(!pendingSpin)return;
+ const remaining=pendingSpin.endsAt-Date.now();
+ if(remaining>0){setTimeout(settleSpin,remaining);return}
+ const finished=pendingSpin;pendingSpin=null;selection=finished.label;
+ history.unshift({label:selection,time:new Date(finished.endsAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})});
+ history=history.slice(0,30);spinning=false;save();render()
+}
+$("spin").onclick=()=>{
+ if(!hydrated||spinning)return;
+ const w=wedges();if(!w.total)return;
+ const pick=randomInt(w.total);let carry=0,target=w.sectors[w.sectors.length-1];
+ for(const s of w.sectors){carry+=s.entry.weight;if(pick<carry){target=s;break}}
+ const middle=(target.start+target.end)/2;
+ const next=Math.ceil((rotation+360*6)/360)*360-middle;
+ rotation=next;spinning=true;
+ pendingSpin={label:target.entry.label,rotation:next,endsAt:Date.now()+(matchMedia("(prefers-reduced-motion: reduce)").matches?0:4280)};
+ if(!save()){render();return}
+ draw();settleSpin()
+};
+$("clearHistory").onclick=()=>{if(!hydrated||spinning)return;if(!pendingHistoryClear){pendingHistoryClear=true;render();return}pendingHistoryClear=false;history=[];save();render()};
+addEventListener("message",e=>{
+ if(e.source!==parent||!e.data||typeof e.data!=="object")return;
+ const m=e.data;
+ if(m.type==="cdp:trigger"){if(!$("spin").disabled)$("spin").onclick();return}
+ if(m.type==="cdp:theme"){applyTheme(m.theme)}
+ else if(m.type==="cdp:init"){applyTheme(m.theme);request()}
+ else if(m.type==="cdp:storage:value"&&m.requestId==="wheel-load"&&!hydrated){hydrated=true;if(m.value&&Array.isArray(m.value.entries))entries=m.value.entries.slice(0,100).map(normalize);if(m.value&&Array.isArray(m.value.history))history=m.value.history.filter(h=>typeof h?.label==="string").slice(0,30).map(h=>({label:h.label.slice(0,68),time:typeof h.time==="string"?h.time.slice(0,32):""}));selection=typeof m.value?.selection==="string"?m.value.selection.slice(0,68):"";rotation=Number.isFinite(m.value?.rotation)&&m.value.rotation>=0&&m.value.rotation<=Number.MAX_SAFE_INTEGER?m.value.rotation:0;
+ const p=m.value?.pendingSpin;
+ if(p&&typeof p.label==="string"&&Number.isFinite(p.rotation)&&p.rotation>=0&&p.rotation<=Number.MAX_SAFE_INTEGER&&Number.isFinite(p.endsAt)&&p.endsAt>=0&&p.endsAt<=Date.now()+5000){pendingSpin={label:p.label.slice(0,68),rotation:p.rotation,endsAt:p.endsAt};rotation=p.rotation;spinning=true}
+ persistence.remember();render();settleSpin()}
+});
+
+// Browser-source protocol v1: public display fields only. CDP owns the URL and opt-in.
+function publishBrowserSource(){
+ if(!hydrated)return;
+ parent.postMessage({type:"cdp:browser-source",value:{version:1,kind:"wheel",title:"Challenge Wheel",entries:active().map(e=>({label:e.label,weight:e.weight})),rotation,spinning,result:selection}},"*");
+}
+const drawForDashboard=draw;
+draw=function(){drawForDashboard();publishBrowserSource()};
+setInterval(publishBrowserSource,1000);
+render()
+})();
+</script></body></html>
