@@ -28,7 +28,29 @@
         "Creator Utility",
         "Marketplace"
       ],
-      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.goal-tracker/1.0.0/index.html"
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.goal-tracker/1.0.0/index.html",
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "target",
+        "heading": "THIS MONTH’S GOALS",
+        "title": "A little closer, every stream.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Community goal",
+            "value": "72 / 100",
+            "progress": 72
+          },
+          {
+            "label": "Next adventure",
+            "value": "38 / 50",
+            "progress": 76
+          }
+        ],
+        "badges": [],
+        "accent": "#72e5bf"
+      }
     },
     {
       "id": "cdp.viewer-queue",
@@ -62,7 +84,33 @@
           "integritySha256": "12dd77cb08b07ffc7a33c69d00ced2d39101e4bb6602be6a5542293f69b92a00",
           "minimumCdpVersion": "0.2.8"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "users",
+        "heading": "COMMUNITY LOBBY",
+        "title": "3 in queue",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "01",
+            "value": "Next player"
+          },
+          {
+            "label": "02",
+            "value": "Player two"
+          },
+          {
+            "label": "03",
+            "value": "Player three"
+          }
+        ],
+        "badges": [
+          "Up next"
+        ],
+        "accent": "#8bc9f5"
+      }
     },
     {
       "id": "cdp.giveaway-manager",
@@ -88,7 +136,22 @@
         "Winner Picker",
         "Marketplace"
       ],
-      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.giveaway-manager/1.0.0/index.html"
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.giveaway-manager/1.0.0/index.html",
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "panel",
+        "icon": "gift",
+        "heading": "A MOMENT FOR YOUR COMMUNITY",
+        "title": "And the winner is…",
+        "subtitle": "Your next giveaway starts here.",
+        "rows": [],
+        "badges": [
+          "Entries",
+          "Draw",
+          "Celebrate"
+        ],
+        "accent": "#f1c279"
+      }
     },
     {
       "id": "cdp.discord-dock",
@@ -122,7 +185,33 @@
         "Integration",
         "Browser Dock",
         "Marketplace"
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "dock",
+        "icon": "discord",
+        "heading": "YOUR COMMUNITY SPACE",
+        "title": "Community game night",
+        "subtitle": "Servers, DMs and your browser dock.",
+        "rows": [
+          {
+            "label": "# general",
+            "value": "Say hello"
+          },
+          {
+            "label": "# stream-chat",
+            "value": "Tonight’s plans"
+          },
+          {
+            "label": "Direct messages",
+            "value": "Your conversations"
+          }
+        ],
+        "badges": [
+          "Local session"
+        ],
+        "accent": "#bda4ff"
+      }
     },
     {
       "id": "cdp.mix-it-up",
@@ -161,7 +250,33 @@
         "Viewers",
         "Local",
         "Marketplace"
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "mixitup",
+        "heading": "STREAM AUTOMATION",
+        "title": "Make every action count.",
+        "subtitle": "Commands, counters and viewer tools.",
+        "rows": [
+          {
+            "label": "!welcome",
+            "value": "Command"
+          },
+          {
+            "label": "Community wins",
+            "value": "Counter"
+          },
+          {
+            "label": "Viewer queue",
+            "value": "Automation"
+          }
+        ],
+        "badges": [
+          "Mix It Up"
+        ],
+        "accent": "#72e5bf"
+      }
     },
     {
       "id": "cdp.stream-deck",
@@ -193,7 +308,45 @@
         "Controls",
         "Stream Deck",
         "Marketplace"
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "controls",
+        "icon": "streamdeck",
+        "heading": "YOUR SETUP AT A TOUCH",
+        "title": "Ready for the next moment.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Quick action",
+            "value": "Run"
+          },
+          {
+            "label": "Break timer",
+            "value": "05:00"
+          },
+          {
+            "label": "Media",
+            "value": "Pause"
+          },
+          {
+            "label": "Dashboard",
+            "value": "Open"
+          },
+          {
+            "label": "Scene",
+            "value": "Switch"
+          },
+          {
+            "label": "Mic",
+            "value": "Mute"
+          }
+        ],
+        "badges": [
+          "Example keys"
+        ],
+        "accent": "#8bc9f5"
+      }
     },
     {
       "id": "cdp.subathon-event-toolkit",
@@ -228,7 +381,26 @@
           "integritySha256": "88ae05c6367d5aed6546aa1ac3f0c453a0485b339da40c1cb64b97998cc22df6",
           "minimumCdpVersion": "0.2.9"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "timer",
+        "icon": "timer",
+        "heading": "COMMUNITY SUBATHON",
+        "title": "02:48:16",
+        "subtitle": "Next milestone: Community game night",
+        "rows": [
+          {
+            "label": "Milestone",
+            "value": "68%",
+            "progress": 68
+          }
+        ],
+        "badges": [
+          "Running example"
+        ],
+        "accent": "#72e5bf"
+      }
     },
     {
       "id": "cdp.counter-board",
@@ -281,7 +453,31 @@
           "integritySha256": "4662de16acb387da1eebeb6a4c694a5c0dd0a1a60c89f98ae644d5f7e3ae31b5",
           "minimumCdpVersion": "0.2.8"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "stats",
+        "icon": "dashboard",
+        "heading": "COUNTER BOARD",
+        "title": "Every moment counts.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Wins",
+            "value": "12"
+          },
+          {
+            "label": "Attempts",
+            "value": "28"
+          },
+          {
+            "label": "Streak",
+            "value": "04"
+          }
+        ],
+        "badges": [],
+        "accent": "#72e5bf"
+      }
     },
     {
       "id": "cdp.challenge-wheel",
@@ -336,7 +532,18 @@
           "integritySha256": "df217a07d158c8e1c5ab6b0fe43e2b0fdd8ddd1dc81a654a94e9db04d9ca39c2",
           "minimumCdpVersion": "0.2.8"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "wheel",
+        "icon": "dice",
+        "heading": "YOUR NEXT CHALLENGE",
+        "title": "Make it a community moment.",
+        "subtitle": "Custom choices. One spin.",
+        "rows": [],
+        "badges": [],
+        "accent": "#bda4ff"
+      }
     },
     {
       "id": "cdp.run-of-show",
@@ -371,7 +578,31 @@
           "integritySha256": "c47ca282dca9f71a259f1d16bf5a6d7c516f95308c5224ff7a734249756fb963",
           "minimumCdpVersion": "0.2.8"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "schedule",
+        "heading": "TONIGHT’S STREAM",
+        "title": "Your stream, planned.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Starting soon",
+            "value": "05:00"
+          },
+          {
+            "label": "Main event",
+            "value": "45:00"
+          },
+          {
+            "label": "Community time",
+            "value": "20:00"
+          }
+        ],
+        "badges": [],
+        "accent": "#72e5bf"
+      }
     },
     {
       "id": "cdp.game-progress",
@@ -418,7 +649,24 @@
           "integritySha256": "8d0dcbf57e734d49c5ebb09285df7a61212149cc7bf91354f1d1346ee751671a",
           "minimumCdpVersion": "0.2.8"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "trophy",
+        "heading": "THE NEXT ADVENTURE",
+        "title": "Every milestone counts.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Campaign progress",
+            "value": "3 / 5",
+            "progress": 60
+          }
+        ],
+        "badges": [],
+        "accent": "#f1c279"
+      }
     },
     {
       "id": "cdp.highlight-notebook",
@@ -453,7 +701,27 @@
           "integritySha256": "acba7419853f4672a8e301e76dc3713d7fc0c510d18be9779b7e6180b0a007e0",
           "minimumCdpVersion": "0.2.8"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "video",
+        "heading": "KEEP THE GOOD MOMENTS",
+        "title": "Ready to clip",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "00:24:18",
+            "value": "The perfect play"
+          },
+          {
+            "label": "01:06:42",
+            "value": "That chat reaction"
+          }
+        ],
+        "badges": [],
+        "accent": "#8bc9f5"
+      }
     },
     {
       "id": "cdp.command-reference",
@@ -505,7 +773,31 @@
           "integritySha256": "e21e53e861f2fb01a7176a8d495823c3c97c96a23958100f16126023abfa5547",
           "minimumCdpVersion": "0.2.8"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "keyboard",
+        "heading": "COMMANDS AT A GLANCE",
+        "title": "Help chat find its way.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "!hello",
+            "value": "Welcome to the stream"
+          },
+          {
+            "label": "!schedule",
+            "value": "See what is coming up"
+          },
+          {
+            "label": "!socials",
+            "value": "Find your community"
+          }
+        ],
+        "badges": [],
+        "accent": "#72e5bf"
+      }
     },
     {
       "id": "cdp.collab-organizer",
@@ -548,7 +840,26 @@
           "integritySha256": "062c416130ce38d3693eb2bcb5bdb9f49278c8875edf0bb2b82bb8509c6da32d",
           "minimumCdpVersion": "0.2.8"
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "users",
+        "heading": "BETTER TOGETHER",
+        "title": "Your next collaboration.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Community game night",
+            "value": "Planned"
+          }
+        ],
+        "badges": [
+          "Creator A",
+          "Creator B"
+        ],
+        "accent": "#8bc9f5"
+      }
     },
     {
       "id": "cdp.twitch-predictions",
@@ -576,7 +887,27 @@
         "Marketplace"
       ],
       "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.twitch-predictions/1.0.0/index.html",
-      "previousReleases": []
+      "previousReleases": [],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "choices",
+        "icon": "target",
+        "heading": "LET CHAT MAKE THE CALL",
+        "title": "Will we win this round?",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Yes",
+            "value": "64%"
+          },
+          {
+            "label": "Plot twist",
+            "value": "36%"
+          }
+        ],
+        "badges": [],
+        "accent": "#bda4ff"
+      }
     },
     {
       "id": "cdp.random-loadout",
@@ -604,7 +935,18 @@
         "Marketplace"
       ],
       "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.random-loadout/1.0.0/index.html",
-      "previousReleases": []
+      "previousReleases": [],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "panel",
+        "icon": "dice",
+        "heading": "A FRESH CHALLENGE",
+        "title": "One roll. A different game.",
+        "subtitle": "Your choices. Unexpected combinations.",
+        "rows": [],
+        "badges": [],
+        "accent": "#bda4ff"
+      }
     },
     {
       "id": "cdp.conversation-starter",
@@ -654,7 +996,21 @@
           "minimumCdpVersion": "0.2.9",
           "permissions": []
         }
-      ]
+      ],
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "panel",
+        "icon": "feedback",
+        "heading": "CONVERSATION STARTER",
+        "title": "What is your favorite Fortnite landing spot?",
+        "subtitle": "A fresh question for your community.",
+        "rows": [],
+        "badges": [
+          "Fortnite",
+          "560 questions"
+        ],
+        "accent": "#8bc9f5"
+      }
     },
     {
       "id": "cdp.sponsorship-manager",
@@ -679,7 +1035,34 @@
       "integritySha256": "295a07d6296310c0426d5e7d69292af75917f94e09de6a8c4f0d4203a6399270",
       "allowMultiple": true,
       "permissions": [],
-      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.sponsorship-manager/1.0.0/index.html"
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.sponsorship-manager/1.0.0/index.html",
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "rows",
+        "icon": "briefcase",
+        "heading": "CAMPAIGN OVERVIEW",
+        "title": "Your next brand moment.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Stream mention",
+            "value": "Ready"
+          },
+          {
+            "label": "Social post",
+            "value": "Delivered"
+          },
+          {
+            "label": "Payment",
+            "value": "Pending"
+          }
+        ],
+        "badges": [
+          "Deliverables",
+          "Campaigns"
+        ],
+        "accent": "#f1c279"
+      }
     },
     {
       "id": "cdp.tournament-manager",
@@ -704,7 +1087,30 @@
       "integritySha256": "8954dc417725af7c8ed16566d1809f0dee5a237743efcfcdd8183ad508356ba3",
       "allowMultiple": true,
       "permissions": [],
-      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.tournament-manager/1.0.0/index.html"
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.tournament-manager/1.0.0/index.html",
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "stats",
+        "icon": "trophy",
+        "heading": "SEMIFINAL MATCHUP",
+        "title": "The next round starts here.",
+        "subtitle": "",
+        "rows": [
+          {
+            "label": "Team Aurora",
+            "value": "2"
+          },
+          {
+            "label": "Team Nova",
+            "value": "1"
+          }
+        ],
+        "badges": [
+          "Best of 3",
+          "Semifinal"
+        ],
+        "accent": "#bda4ff"
+      }
     },
     {
       "id": "cdp.community-trivia",
@@ -729,7 +1135,37 @@
       "integritySha256": "a72c7288bf55e0b4f9bb7e08f730fb0feda67bd36d22d6b222d57b832b2c8887",
       "allowMultiple": true,
       "permissions": [],
-      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.community-trivia/1.0.0/index.html"
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.community-trivia/1.0.0/index.html",
+      "preview": {
+        "schemaVersion": 1,
+        "layout": "choices",
+        "icon": "quiz",
+        "heading": "COMMUNITY TRIVIA",
+        "title": "Which planet is known as the Red Planet?",
+        "subtitle": "00:20 remaining",
+        "rows": [
+          {
+            "label": "A",
+            "value": "Venus"
+          },
+          {
+            "label": "B",
+            "value": "Mars"
+          },
+          {
+            "label": "C",
+            "value": "Jupiter"
+          },
+          {
+            "label": "D",
+            "value": "Saturn"
+          }
+        ],
+        "badges": [
+          "Multiple choice"
+        ],
+        "accent": "#fa93cb"
+      }
     }
   ]
 }
