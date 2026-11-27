@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T00:00:00Z",
+  "updatedAt": "2026-11-26T23:59:00Z",
   "items": [
     {
       "id": "cdp.goal-tracker",
@@ -235,13 +235,13 @@
       "kind": "widget",
       "publicationStatus": "published",
       "name": "Custom Counter Board",
-      "description": "Track stream wins, deaths and custom counters with configurable increments, session resets and lifetime addition totals. Optional OBS display with CDP 0.2.9 browser-source support.",
-      "version": "1.2.0",
+      "description": "Manage custom stream counters with add/edit/remove, increments, session resets, lifetime totals and optional OBS browser-source display. Includes scrolling for height-limited dashboard cards.",
+      "version": "1.2.1",
       "publisher": "Creator Dashboard Pro",
       "category": "Creator Utilities",
       "icon": "🔢",
-      "minimumCdpVersion": "0.2.8",
-      "integritySha256": "ce175af410c3e9085b4bcf68a8b76523844163028aa31c6d73cb9b5faabd6f23",
+      "minimumCdpVersion": "0.2.10",
+      "integritySha256": "8b9909b51e00a371760eeff6b043b88c5cefc2f355f266dd119a8a1e5bf8d569",
       "allowMultiple": true,
       "defaultWidth": 530,
       "defaultHeight": 500,
@@ -255,8 +255,14 @@
         "Manual",
         "Marketplace"
       ],
-      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.counter-board/1.2.0/index.html",
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.counter-board/1.2.1/index.html",
       "previousReleases": [
+        {
+          "version": "1.2.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.counter-board/1.2.0/index.html",
+          "integritySha256": "ce175af410c3e9085b4bcf68a8b76523844163028aa31c6d73cb9b5faabd6f23",
+          "minimumCdpVersion": "0.2.8"
+        },
         {
           "version": "1.1.0",
           "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.counter-board/1.1.0/index.html",
@@ -599,6 +605,131 @@
       ],
       "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.random-loadout/1.0.0/index.html",
       "previousReleases": []
+    },
+    {
+      "id": "cdp.conversation-starter",
+      "name": "Conversation Starter",
+      "description": "Search 560 built-in conversation prompts across 16 game collections and general topics, with rotation, custom questions, favorites and history.",
+      "category": "Creator Utilities",
+      "icon": "💬",
+      "tags": [
+        "Community",
+        "Prompts",
+        "Just Chatting",
+        "Game-specific",
+        "Search"
+      ],
+      "defaultWidth": 440,
+      "defaultHeight": 560,
+      "minWidth": 300,
+      "minHeight": 360,
+      "kind": "widget",
+      "publicationStatus": "published",
+      "version": "1.0.3",
+      "publisher": "Creator Dashboard Pro",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "6c9b7158b95af90fddf5b6f27f63a65d398911ba2b06345be7b8a1a01262e1f6",
+      "allowMultiple": true,
+      "permissions": [],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.conversation-starter/1.0.3/index.html",
+      "previousReleases": [
+        {
+          "version": "1.0.2",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.conversation-starter/1.0.2/index.html",
+          "integritySha256": "bc5a10c4686e8b875a0d3f9dba0e9cd7799112266c3c4794723dfa54ef99ae3a",
+          "minimumCdpVersion": "0.2.9",
+          "permissions": []
+        },
+        {
+          "version": "1.0.1",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.conversation-starter/1.0.1/index.html",
+          "integritySha256": "aae8a3534c99877430e74ba92c00034190fb45c514f3d4366454f691cfe24971",
+          "minimumCdpVersion": "0.2.9",
+          "permissions": []
+        },
+        {
+          "version": "1.0.0",
+          "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.conversation-starter/1.0.0/index.html",
+          "integritySha256": "07303421fa60ccdf2e0386e161af80431612f29a75512974d26f4cf190c81e19",
+          "minimumCdpVersion": "0.2.9",
+          "permissions": []
+        }
+      ]
+    },
+    {
+      "id": "cdp.sponsorship-manager",
+      "name": "Sponsorship Manager",
+      "description": "Track sponsor campaigns, deliverables, deadlines, talking points and payment status.",
+      "category": "Creator Utilities",
+      "icon": "💼",
+      "tags": [
+        "Sponsors",
+        "Campaigns",
+        "Planning"
+      ],
+      "defaultWidth": 530,
+      "defaultHeight": 660,
+      "minWidth": 340,
+      "minHeight": 420,
+      "kind": "widget",
+      "publicationStatus": "published",
+      "version": "1.0.0",
+      "publisher": "Creator Dashboard Pro",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "295a07d6296310c0426d5e7d69292af75917f94e09de6a8c4f0d4203a6399270",
+      "allowMultiple": true,
+      "permissions": [],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.sponsorship-manager/1.0.0/index.html"
+    },
+    {
+      "id": "cdp.tournament-manager",
+      "name": "Tournament Manager",
+      "description": "Run single-elimination or round-robin competitions, record scores and display standings.",
+      "category": "Creator Utilities",
+      "icon": "🏆",
+      "tags": [
+        "Tournament",
+        "Scores",
+        "Community"
+      ],
+      "defaultWidth": 540,
+      "defaultHeight": 660,
+      "minWidth": 340,
+      "minHeight": 420,
+      "kind": "widget",
+      "publicationStatus": "published",
+      "version": "1.0.0",
+      "publisher": "Creator Dashboard Pro",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "8954dc417725af7c8ed16566d1809f0dee5a237743efcfcdd8183ad508356ba3",
+      "allowMultiple": true,
+      "permissions": [],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.tournament-manager/1.0.0/index.html"
+    },
+    {
+      "id": "cdp.community-trivia",
+      "name": "Community Trivia",
+      "description": "Host manually scored trivia with custom questions, answer timers and optional broadcast displays.",
+      "category": "Creator Utilities",
+      "icon": "🧠",
+      "tags": [
+        "Trivia",
+        "Games",
+        "Community"
+      ],
+      "defaultWidth": 490,
+      "defaultHeight": 650,
+      "minWidth": 320,
+      "minHeight": 400,
+      "kind": "widget",
+      "publicationStatus": "published",
+      "version": "1.0.0",
+      "publisher": "Creator Dashboard Pro",
+      "minimumCdpVersion": "0.2.9",
+      "integritySha256": "a72c7288bf55e0b4f9bb7e08f730fb0feda67bd36d22d6b222d57b832b2c8887",
+      "allowMultiple": true,
+      "permissions": [],
+      "entryUrl": "https://raw.githubusercontent.com/dylantheoz-dev/cdp-releases/main/marketplace/widgets/cdp.community-trivia/1.0.0/index.html"
     }
   ]
 }
